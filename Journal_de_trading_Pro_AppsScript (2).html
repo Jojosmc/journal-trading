@@ -1,0 +1,1241 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+<title>Journal de trading</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0A0A0A;--card:#121212;--card2:#151515;--ink:#F2F2F2;--mute:#8A8F98;--line:#262626;--gain:#22C55E;--loss:#F87171;--acc:#F2F2F2;--on:#0A0A0A;--soft:#1B1B1B;--cj:#60A5FA;--cs:#A78BFA;--ca:#F59E0B;--onc:#0A0A0A;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);background:var(--bg)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased;padding-bottom:92px}
+main{max-width:640px;margin:0 auto;padding:20px 14px}
+h1{font-size:21px;margin:0 0 2px;font-weight:650;letter-spacing:-.01em}
+.sub{color:var(--mute);font-size:12px;margin:0 0 16px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--cj);outline-offset:2px}
+.pos{color:var(--gain)}.neg{color:var(--loss)}.zero{color:var(--mute)}
+.accbar{display:flex;gap:8px;margin:0 0 14px}.accbar select{flex:1}
+.sum{display:grid;grid-template-columns:repeat(3,1fr);background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:10px}
+.sum div{padding:12px 14px}.sum div+div{border-left:1px solid var(--line)}
+.sum small,.k small{display:block;color:var(--mute);font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.sum b{font-size:20px;font-weight:650}
+.dh{display:flex;justify-content:space-between;color:var(--mute);font-size:12px;margin:16px 2px 6px;text-transform:uppercase;letter-spacing:.05em}
+.row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:6px}
+.row i{width:3px;align-self:stretch;border-radius:2px;background:var(--mute)}
+.row i.pos{background:var(--gain)}.row i.neg{background:var(--loss)}
+.rm{flex:1;min-width:0}.rm b{font-weight:600}
+.rm small{display:block;color:var(--mute);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rv{text-align:right}.rv b{display:block;font-weight:650}.rv small{font-size:12.5px;color:var(--mute)}
+.flag{color:var(--loss)}
+.empty{background:var(--card);border:1px dashed var(--line);border-radius:14px;padding:26px 16px;color:var(--mute);text-align:center}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.card h2{font-size:12px;margin:0 0 10px;font-weight:600;color:var(--mute);text-transform:uppercase;letter-spacing:.06em}
+.kg{display:grid;grid-template-columns:1fr 1fr;gap:14px 10px}
+.k b{font-size:20px;font-weight:650}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{padding:8px 4px;text-align:right;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}th{color:var(--mute);font-weight:500;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em}
+.bar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;align-items:center;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:rgba(10,10,10,.94);border-top:1px solid var(--line)}
+.tb{flex:1;border:1.5px solid var(--c);background:none;padding:10px 4px;border-radius:12px;color:var(--c);font-weight:600}
+.tb[data-t="j"]{--c:var(--cj)}.tb[data-t="s"]{--c:var(--cs)}.tb[data-t="a"]{--c:var(--ca)}
+.tb[aria-current="page"]{background:var(--c);color:var(--onc)}
+.add{background:var(--ink);color:var(--on);border:0;border-radius:12px;padding:12px 16px;font-weight:650}
+.sh{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;z-index:5}
+.sh[hidden]{display:none}
+.pn{background:var(--card);border:1px solid var(--line);border-bottom:0;width:100%;max-width:640px;max-height:94%;overflow:auto;border-radius:20px 20px 0 0;padding:16px 14px 0}
+.ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.ph h2{margin:0;font-size:18px;font-weight:650}
+.ic{border:0;background:var(--soft);width:36px;height:36px;border-radius:50%}
+.sec{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:4px 14px 14px;margin:0 0 12px}
+.sec h3{margin:12px 0 0;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--mute);font-weight:650}
+label,.lb{display:block;font-size:12px;color:var(--mute);margin:12px 0 6px;font-weight:500}
+label>input,label>textarea,label>select{display:block;width:100%;margin-top:6px}
+input,textarea,select{font:inherit;font-size:16px;color:var(--ink);background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:12px;min-width:0;min-height:46px;color-scheme:dark}
+textarea{min-height:0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.seg{display:flex;gap:6px}
+.seg button,.chips button{border:1px solid var(--line);background:var(--soft);border-radius:10px;padding:11px 12px;color:var(--ink);font-weight:500}
+.seg button{flex:1}
+[aria-pressed="true"]{background:var(--ink)!important;color:var(--on)!important;border-color:var(--ink)!important}
+#g-side [data-v="Long"][aria-pressed="true"],#g-trend [data-v="Haussière"][aria-pressed="true"],#g-out [data-v="g"][aria-pressed="true"]{background:var(--gain)!important;border-color:var(--gain)!important;color:#04170B!important}
+#g-side [data-v="Short"][aria-pressed="true"]{background:#3B82F6!important;border-color:#3B82F6!important;color:#07172E!important}
+#g-trend [data-v="Baissière"][aria-pressed="true"],#g-out [data-v="p"][aria-pressed="true"]{background:var(--loss)!important;border-color:var(--loss)!important;color:#1F0606!important}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chips button{padding:8px 12px;font-size:14px}
+.pv{background:var(--soft);border-radius:10px;padding:11px 13px;margin:12px 0 2px;font-size:14px;color:var(--mute)}
+.act{position:sticky;bottom:0;display:flex;gap:8px;background:var(--card);border-top:1px solid var(--line);margin:0 -14px;padding:12px 14px calc(14px + env(safe-area-inset-bottom,0px))}
+.pr,.gh{flex:1;border-radius:12px;padding:14px;font-weight:650;border:1px solid var(--ink)}
+.pr{background:var(--ink);color:var(--on)}.gh{background:none;color:var(--loss);border-color:var(--loss)}
+.gh[hidden]{display:none}
+.toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:var(--ink);color:var(--on);padding:10px 14px;border-radius:10px;font-size:13.5px;font-weight:500;z-index:9;max-width:90%}
+.ft{color:var(--mute);font-size:12px;margin-top:16px}
+.lnk{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:10px 14px;color:var(--ink);font-weight:500}
+.th{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:8px}.th>div{position:relative}
+.th img{width:112px;height:112px;object-fit:cover;border-radius:8px;border:1px solid var(--line);display:block}
+.rm2{position:absolute;top:-7px;right:-7px;width:24px;height:24px;border-radius:50%;border:0;background:var(--loss);color:#1F0606;font-size:12px;padding:0}
+.lbx{position:fixed;inset:0;background:rgba(0,0,0,.94);z-index:8;display:flex;align-items:center;justify-content:center}
+.lbx[hidden]{display:none}.lbx img{max-width:100%;max-height:100%}
+.wr{display:flex;align-items:center;gap:18px}.wr ul{list-style:none;margin:0;padding:0;font-size:14px}.wr li{margin:5px 0}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px}
+.cvt{display:flex;gap:6px;margin-bottom:10px}.cvt button{border:1px solid var(--line);background:var(--soft);border-radius:8px;padding:6px 12px;font-size:13.5px}
+.file{display:inline-block;border:1px dashed var(--mute);border-radius:10px;padding:11px 14px;color:var(--ink);background:var(--soft);margin:0}
+@keyframes up{from{transform:translateY(28px);opacity:0}to{transform:none;opacity:1}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes pop{0%{background:rgba(34,197,94,.22)}100%{background:var(--card2)}}
+@keyframes shk{20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+.sh:not([hidden]){animation:fade .18s ease}.sh:not([hidden]) .pn{animation:up .28s cubic-bezier(.2,.8,.2,1)}
+.ar{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:10px;align-items:center;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px;transition:border-color .2s}
+.ar.on{border-color:#4a4a4a}.ar.new{animation:pop 1.4s ease}
+.av{width:40px;height:40px;border-radius:12px;background:var(--soft);display:grid;place-items:center;font-weight:650}.ar.on .av{background:var(--ink);color:var(--on)}
+.ar .an2{font-weight:600;background:transparent;border-color:transparent;padding:8px 6px;transition:background .15s,border-color .15s}.ar .an2:focus{background:var(--soft);border-color:var(--line);outline:0}
+.ar .ic{width:40px;min-width:40px;height:40px;border-radius:12px;font-size:13px;transition:background .15s,transform .1s}.ar .ic.cf{background:var(--loss);color:var(--on);padding:0 12px;font-weight:650}
+.ar2{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:8px}.ar select{min-width:0;width:100%;font-size:14px}
+.capf{position:relative;display:block}.capf span{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--mute);pointer-events:none}.capf input{width:100%;box-sizing:border-box;padding-left:28px}
+.nacc{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:14px;margin:6px 0 12px}
+.fl{display:grid;gap:6px;font-size:12px;color:var(--mute);margin-bottom:12px}.fl input{width:100%;box-sizing:border-box}.lb2{font-size:12px;color:var(--mute);margin:0 0 8px}
+.tch{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}.tch button{border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:999px;padding:9px 14px;font-weight:500;transition:background .15s,color .15s,transform .1s}.tch button:active,.pr:active,.ic:active{transform:scale(.96)}.tch button.on{background:var(--ink);color:var(--on);border-color:var(--ink)}
+.err{border-color:var(--loss)!important;animation:shk .3s}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:7px 16px;font-size:14px;padding:12px 0 2px}.kv span{color:var(--mute)}.kv b{font-weight:550;text-align:right}
+.ck{display:grid;grid-template-columns:1fr 1fr;gap:7px;font-size:13.5px;padding-top:10px}
+.txt{background:var(--soft);border-radius:10px;padding:10px 12px;font-size:14px;white-space:pre-wrap;margin-top:10px}
+.cl{margin:0;padding-left:18px;font-size:14px}.cl li{margin:6px 0}
+.tb{padding:10px 2px;font-size:14px}.add{padding:12px 12px}
+.sec>select{display:block;width:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+.hd{padding:16px 14px;background:linear-gradient(120deg,#0E0E0F,#151517);border-bottom:1px solid var(--line)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:760px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.logo{flex:none;width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--cj),var(--cs));display:grid;place-items:center;color:#0A0A0A;font-weight:800;font-size:18px}
+.hd h1{font-size:19px;margin:0}.hd .sub{margin:2px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hd .add{flex:none;padding:10px 12px;font-size:14px;white-space:nowrap}
+.tn{position:sticky;top:env(safe-area-inset-top,0px);z-index:4;display:flex;gap:6px;overflow-x:auto;padding:10px 14px;background:var(--bg);border-bottom:1px solid var(--line);scrollbar-width:none}
+.tn::-webkit-scrollbar{display:none}
+.tn .tb{flex:none;white-space:nowrap;border:1px solid transparent;background:none;color:var(--mute);padding:9px 14px;border-radius:10px;font-weight:600;font-size:14px}
+.tn .tb[aria-current="page"]{background:var(--c);color:var(--onc)}
+.tb[data-t="d"]{--c:var(--cj)}.tb[data-t="j"]{--c:#2DD4BF}.tb[data-t="b"]{--c:var(--gain)}.tb[data-t="c"]{--c:var(--cs)}.tb[data-t="p"]{--c:#CBD5E1}
+main{max-width:760px}
+.fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:54px;height:54px;border-radius:50%;border:0;background:var(--ink);color:var(--on);font-size:28px;box-shadow:0 6px 18px rgba(0,0,0,.55);z-index:3}
+.sh2{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin:2px 0 14px}.sh2 h2{margin:0;font-size:21px;font-weight:650}.sh2 .sub{margin:2px 0 0}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:12px}
+@media(min-width:700px){.cards{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.mc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;min-width:0}
+.mi{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:15px;margin-bottom:9px}
+.mi.g{background:#22C55E24;color:var(--gain)}.mi.b{background:#60A5FA24;color:var(--cj)}.mi.v{background:#A78BFA24;color:var(--cs)}.mi.a{background:#F59E0B24;color:var(--ca)}.mi.r{background:#F8717124;color:var(--loss)}
+.ml{color:var(--mute);font-size:11.5px;text-transform:uppercase;letter-spacing:.05em}.mv{font-size:23px;font-weight:650;margin:2px 0;overflow:hidden;text-overflow:ellipsis}.ms{color:var(--mute);font-size:12px}
+.h3s{font-size:12px;color:var(--mute);text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin:16px 2px 8px}
+.flt{display:flex;gap:8px;margin:0 0 10px}.flt select{flex:1}
+.i{width:1.1em;height:1.1em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.seg button,.pr,.gh,.lnk,.add,.tn .tb,.file{display:inline-flex;align-items:center;justify-content:center;gap:.45em}
+.fab{display:grid;place-items:center}.fab .i{width:26px;height:26px}
+.mi .i{width:18px;height:18px}
+.row .rm .i{width:.95em;height:.95em;vertical-align:-.12em}
+#g-conf button[aria-pressed="true"]::before{content:"✓ "}
+
+/* Laboratoire d'analyse — reprend les composants et couleurs du journal */
+.labnav{display:flex;gap:6px;overflow-x:auto;padding:0 0 10px;margin:0 0 12px;scrollbar-width:none}
+.labnav::-webkit-scrollbar{display:none}
+.labnav button{flex:none;border:1px solid var(--line);background:var(--soft);color:var(--mute);border-radius:9px;padding:8px 11px;font:600 12.5px Inter,system-ui,sans-serif;white-space:nowrap}
+.labnav button[aria-pressed="true"]{background:var(--ink);color:var(--on);border-color:var(--ink)}
+.labfilters{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:12px}
+.labfilters summary{cursor:pointer;color:var(--ink);font-weight:600;font-size:13px}
+.labfilters .g2{gap:8px}.labfilters label{margin:9px 0 0}
+.labfilters select,.labfilters input{width:100%;min-height:40px;padding:9px;font-size:14px}
+.labactions{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0 12px}
+.labactions button,.labbtn{border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:9px;padding:9px 11px;font-size:13px;font-weight:600}
+.labtablewrap{overflow-x:auto}
+.labtablewrap table{min-width:470px}
+.labmuted{font-size:12px;color:var(--mute)}
+.labscore{font-weight:700;color:var(--cj)}
+.labrow{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.labrow:last-child{border-bottom:0}
+.labrow>span:first-child{min-width:0;overflow-wrap:anywhere}
+.labgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.labgrid .mc{padding:11px}
+.labpill{display:inline-block;border:1px solid var(--line);border-radius:20px;padding:3px 8px;font-size:11px;color:var(--mute)}
+.labempty{padding:14px;border:1px dashed var(--line);border-radius:12px;color:var(--mute);font-size:13px;text-align:center}
+.labweights{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.labweights label{margin:0}.labweights input{width:100%;font-size:14px;min-height:40px}
+.labcompare{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.labcompare .card{margin:0;padding:12px}
+@media print{body{padding:0;background:#fff;color:#111}.hd,.tn,.accbar,.fab,.labnav,.labfilters,.labactions{display:none!important}main{max-width:none;padding:0}.card,.mc{break-inside:avoid;background:#fff;color:#111;border-color:#bbb}.labmuted,.ms,.ml,.card h2{color:#444!important}table th,table td{border-color:#ccc}}
+
+
+
+/* Mes trades : cartes mensuelles inspirées de la maquette validée */
+.yearbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:18px 0 12px}
+.yearbar select{width:auto;min-width:112px;padding:9px 13px;min-height:44px}
+.monthgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:12px 0 18px}
+.month-open-panel{grid-column:1/-1;min-width:0;animation:monthReveal .22s ease-out}
+.month-screen{animation:monthReveal .22s ease-out;min-width:0}
+.month-screen-head{display:flex;align-items:center;gap:12px;margin:10px 0 16px;padding:14px;background:linear-gradient(135deg,#172C42,#203D55);border:1px solid #34516A;border-radius:16px}
+.month-screen-head .back-month{flex:0 0 auto;border:1px solid #59748A;background:rgba(255,255,255,.08);color:#fff;border-radius:11px;padding:10px 13px;font-weight:700}
+.month-screen-title{min-width:0;color:#fff}
+.month-screen-title strong{display:block;font-size:19px;letter-spacing:.02em}
+.month-screen-title small{display:block;color:#B8C9D8;margin-top:3px}
+.month-screen .monthstats{margin-top:0}
+
+@keyframes monthReveal{from{opacity:.45;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.month-open-panel .monthstats{margin:0 0 12px}
+.month-open-panel .calcard{margin:0 0 12px}
+.month-open-panel .daydetail,.month-open-panel>.empty{margin:0 0 12px}
+
+.monthtile{position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;align-items:flex-start;min-width:0;min-height:188px;text-align:left;border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:17px 15px 14px;background:linear-gradient(145deg,var(--m1),var(--m2));color:#fff;box-shadow:0 5px 14px rgba(0,0,0,.13);-webkit-tap-highlight-color:transparent}
+.monthtile:before{content:"";position:absolute;z-index:-1;width:116px;height:116px;border:2px solid rgba(255,255,255,.075);border-radius:50%;right:-38px;top:-34px;box-shadow:0 0 0 13px rgba(255,255,255,.025),0 0 0 27px rgba(255,255,255,.018)}
+.monthtile[aria-pressed="true"]{background:linear-gradient(145deg,var(--m1),var(--m2))!important;color:#fff!important;border:1px solid #E6B94D!important;outline:2px solid #E6B94D;outline-offset:2px;filter:brightness(1.08);box-shadow:0 0 0 3px rgba(230,185,77,.16),0 7px 18px rgba(0,0,0,.22)}
+.monthtile .mtop{display:flex;align-items:center;justify-content:space-between;width:100%;gap:6px;margin-bottom:17px}
+.monthtile .monthicon{font-size:28px;line-height:1}
+.monthtile .mn{font-size:14px;font-weight:700;letter-spacing:.04em;color:rgba(255,255,255,.84)}
+.monthtile strong{display:block;font-size:39px;line-height:1.05;font-weight:750;margin:0 0 10px;font-variant-numeric:tabular-nums}
+.monthtile .mres{display:block;font-size:clamp(11px,1.65vw,15px);font-weight:600;line-height:1.35;color:rgba(255,255,255,.88);white-space:normal;overflow-wrap:anywhere}
+.monthtile .mbadge{display:inline-flex;align-items:center;justify-content:center;margin-top:auto;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:.035em;background:rgba(255,255,255,.11)}
+.monthtile .mbadge.pos{color:#12D477;background:rgba(0,190,105,.17)}
+.monthtile .mbadge.neg{color:#FF655F;background:rgba(235,65,65,.17)}
+.monthtile .mbadge.empty{color:#E1E6ED;background:rgba(210,220,235,.15)}
+.monthtile .mbadge.flat{color:#E9D58B;background:rgba(220,190,90,.14)}
+.monthtile:nth-child(6n+1){--m1:#123F36;--m2:#194D43}
+.monthtile:nth-child(6n+2){--m1:#173D5B;--m2:#214D70}
+.monthtile:nth-child(6n+3){--m1:#4A2D32;--m2:#60363D}
+.monthtile:nth-child(6n+4){--m1:#44345F;--m2:#554071}
+.monthtile:nth-child(6n+5){--m1:#514321;--m2:#655126}
+.monthtile:nth-child(6n){--m1:#303E50;--m2:#3B4B60}
+@media(max-width:430px){.monthgrid{gap:9px}.monthtile{min-height:170px;padding:13px 10px 11px;border-radius:18px}.monthtile .mtop{margin-bottom:14px}.monthtile .monthicon{font-size:24px}.monthtile .mn{font-size:11px}.monthtile strong{font-size:32px;margin-bottom:8px}.monthtile .mres{font-size:11px}.monthtile .mbadge{font-size:10px;padding:5px 8px}}
+@media(min-width:700px){.monthtile{min-height:220px;padding:20px}.monthtile .monthicon{font-size:32px}.monthtile .mn{font-size:16px}.monthtile strong{font-size:46px}.monthtile .mres{font-size:16px}.monthtile .mbadge{font-size:14px}}
+.monthstats{background:linear-gradient(135deg,#172C42,#1D354B);border:1px solid #29445C;border-radius:14px;padding:14px;margin:12px 0}
+.monthstats .eyebrow{font-size:10px;letter-spacing:.1em;color:#B8D6EB;font-weight:700}
+.monthstats .bigresult{font-size:25px;font-weight:750;margin:3px 0 10px}
+.monthstats .statgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.monthstats .statgrid div{background:rgba(255,255,255,.055);border-radius:9px;padding:8px}
+.monthstats .statgrid b{display:block;font-size:17px}
+.monthstats .statgrid small{font-size:10px;color:#B8C9D8}
+.calcard{background:linear-gradient(155deg,#111F30 0%,#101923 58%,#151D2A 100%);border:1px solid #2B4055;border-radius:20px;padding:16px;margin:14px 0 13px;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.calhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px;padding-bottom:12px;border-bottom:1px solid rgba(148,178,205,.16)}
+.calhead h3{font-size:16px;font-weight:800;letter-spacing:.025em;margin:0;color:#F3F7FC}
+.calhead .sub{background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.2);color:#8BD7FA;padding:6px 10px;border-radius:999px;font-size:11px;font-weight:700}
+.calgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.calwd{text-align:center;color:#8FA6BC;font-size:10px;font-weight:800;letter-spacing:.08em;padding:5px 0 8px}
+.calday{position:relative;display:flex;align-items:center;justify-content:center;min-width:0;min-height:44px;border:1px solid rgba(145,166,190,.13);border-radius:11px;background:rgba(148,163,184,.09);color:#E8EEF5;font-size:13px;font-weight:650;padding:6px 2px 10px;transition:background .16s,border-color .16s,transform .16s; -webkit-tap-highlight-color:transparent}
+.calday:active{transform:scale(.96)}
+.calday.blank{background:transparent;border-color:transparent;pointer-events:none}
+.calday.has-trades{font-weight:850}
+.calday.positive{background:linear-gradient(145deg,rgba(13,148,91,.27),rgba(16,185,129,.12));border-color:rgba(52,211,153,.35);color:#A7F3D0}
+.calday.negative{background:linear-gradient(145deg,rgba(185,55,55,.3),rgba(239,68,68,.12));border-color:rgba(248,113,113,.35);color:#FECACA}
+.calday.flat{background:linear-gradient(145deg,rgba(100,116,139,.28),rgba(148,163,184,.12));border-color:rgba(203,213,225,.25);color:#E2E8F0}
+.calday.positive:after,.calday.negative:after,.calday.flat:after{content:"";position:absolute;width:5px;height:5px;border-radius:50%;bottom:5px;left:50%;transform:translateX(-50%)}
+.calday.positive:after{background:#34D399}.calday.negative:after{background:#F87171}.calday.flat:after{background:#CBD5E1}
+.calday[aria-pressed="true"]{background:linear-gradient(145deg,#244A68,#1B354D)!important;border:1px solid #F2C66D!important;color:#FFFFFF!important;box-shadow:0 0 0 2px rgba(242,198,109,.2),inset 0 0 0 1px rgba(255,255,255,.12);z-index:1}
+.calday[aria-pressed="true"]:after{background:#F8D88D;width:6px;height:6px}
+.calcard .ft{color:#9FB1C3;font-size:11px;line-height:1.55;margin:13px 2px 0}
+@media(max-width:430px){.calcard{padding:12px;border-radius:17px}.calgrid{gap:5px}.calday{min-height:40px;border-radius:9px;font-size:12px}.calwd{font-size:9px}.calhead h3{font-size:14px}}
+.daydetail.daydetail{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:14px;margin:12px 0}
+.dayhero{background:#172C42;border:1px solid #29445C;border-radius:12px;padding:13px;margin-bottom:10px}
+.dayhero .dayresult{font-size:25px;font-weight:750}
+.daymetrics{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:10px}
+.daymetrics div{background:rgba(255,255,255,.055);border-radius:9px;padding:8px}
+.daymetrics b{display:block;font-size:17px}.daymetrics small{font-size:10px;color:#B8C9D8}
+.daytitle{font-size:12px;color:var(--mute);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin:14px 0 8px}
+@media(max-width:380px){.monthstats .statgrid{grid-template-columns:repeat(2,1fr)}.daymetrics{grid-template-columns:repeat(2,1fr)}.monthtile{min-height:103px;padding:9px}.monthtile strong{font-size:22px}}
+
+
+/* Statistiques simplifiées : analyse visuelle en anneaux */
+.stats-intro{margin:0 0 14px;color:var(--mute);font-size:13px;line-height:1.5}
+.stats-section-title{font-size:15px;font-weight:700;margin:18px 2px 9px}
+.stats-grid{display:grid;grid-template-columns:1fr;gap:10px}
+.stats-card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:14px;min-width:0}
+.stats-card h3{font-size:14px;margin:0 0 5px}
+.stats-note{font-size:12px;color:var(--mute);line-height:1.45}
+.stats-ring-row{display:flex;align-items:center;gap:15px;margin-top:12px}
+.stats-donut{width:112px;height:112px;border-radius:50%;flex:none;display:grid;place-items:center;position:relative}
+.stats-donut:before{content:"";position:absolute;inset:15px;border-radius:50%;background:var(--card)}
+.stats-donut-center{position:relative;text-align:center;font-size:19px;font-weight:750;line-height:1.1}
+.stats-donut-center small{display:block;font-size:9px;font-weight:600;color:var(--mute);margin-top:3px;text-transform:uppercase;letter-spacing:.04em}
+.stats-legend{display:grid;gap:7px;min-width:0;flex:1}
+.stats-legend-row{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px}
+.stats-legend-label{display:flex;align-items:center;gap:6px;color:var(--mute);min-width:0}
+.stats-dot{width:8px;height:8px;border-radius:50%;flex:none}
+.stats-highlight{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:11px;padding-top:10px;border-top:1px solid var(--line)}
+.stats-highlight strong{font-size:15px}
+.stats-list{display:grid;gap:8px;margin-top:10px}
+.stats-list-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 10px;border-radius:10px;background:var(--soft);font-size:12px}
+.stats-list-item span{min-width:0;overflow-wrap:anywhere}
+.stats-good{color:var(--gain)}.stats-bad{color:var(--loss)}
+@media(min-width:620px){.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.stats-card.wide{grid-column:1/-1}}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes ring{from{stroke-dashoffset:var(--c)}to{stroke-dashoffset:var(--o)}}
+@keyframes growx{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.hero{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.hk{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:12px 6px 10px;text-align:center;animation:rise .5s ease both}.hk:nth-child(2){animation-delay:.08s}.hk:nth-child(3){animation-delay:.16s}
+.rg{position:relative;width:84px;height:84px;margin:0 auto 6px}.rg svg{width:84px;height:84px;transform:rotate(-90deg)}
+.rg circle{fill:none;stroke-width:7}.rg .bg{stroke:var(--soft)}.rg .fg{stroke-linecap:round;stroke-dasharray:var(--c);animation:ring 1.1s cubic-bezier(.2,.8,.2,1) both}
+.rg b{position:absolute;inset:0;display:grid;place-items:center;font-size:17px;font-weight:650}
+.hk small{display:block;color:var(--mute);font-size:12px}.xv{height:84px;display:grid;place-items:center;font-size:24px;font-weight:700;margin-bottom:6px}
+.ibl{display:flex;justify-content:space-between;gap:8px;font-size:13px;margin:10px 0 5px}.ibl small{color:var(--mute);margin-left:6px}
+.ibt{position:relative;height:10px;background:var(--soft);border-radius:6px;overflow:hidden}.ibz{position:absolute;left:50%;top:0;bottom:0;width:1px;background:#555;z-index:1}
+.ibb{position:absolute;top:0;bottom:0;border-radius:6px;animation:growx .8s cubic-bezier(.2,.8,.2,1) both}
+.ibb.p{left:50%;background:linear-gradient(90deg,#16a34a,#22C55E);transform-origin:left}.ibb.n{right:50%;background:linear-gradient(270deg,#dc2626,#F87171);transform-origin:right}
+.gp{color:var(--gain)}.gn{color:var(--loss)}
+@media (prefers-reduced-motion:reduce){.hk,.rg .fg,.ibb,.stats-list-item{animation:none!important}}
+</style>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Journal">
+<meta name="theme-color" content="#0A0A0A">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></symbol><symbol id="i-down" viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></symbol><symbol id="i-flat" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol><symbol id="i-dash" viewBox="0 0 24 24"><path d="M6 12h12"/></symbol><symbol id="i-check" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></symbol><symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol><symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20l4-1 11-11-3-3L5 16l-1 4zM14 6l3 3"/></symbol><symbol id="i-trash" viewBox="0 0 24 24"><path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12"/></symbol><symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol><symbol id="i-grid" viewBox="0 0 24 24"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></symbol><symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></symbol><symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 15l3-4 3 3 5-7"/></symbol><symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6l7-3z"/></symbol><symbol id="i-wallet" viewBox="0 0 24 24"><path d="M4 7h14a2 2 0 012 2v9a2 2 0 01-2 2H4zM4 7V6a2 2 0 012-2h11M16 14h.01"/></symbol><symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10M14 5v4M6 15v4"/></symbol><symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4zM12 17a3.5 3.5 0 100-7 3.5 3.5 0 000 7z"/></symbol><symbol id="i-dl" viewBox="0 0 24 24"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></symbol><symbol id="i-trend" viewBox="0 0 24 24"><path d="M4 17l5-5 4 4 7-8M15 8h5v5"/></symbol><symbol id="i-dollar" viewBox="0 0 24 24"><path d="M12 3a9 9 0 100 18 9 9 0 000-18zM14.5 9.5c-.5-1-1.5-1.5-2.5-1.5-1.4 0-2.5.7-2.5 1.8 0 2.5 5 1.2 5 3.7 0 1.1-1.1 1.8-2.5 1.8-1.1 0-2-.5-2.5-1.5M12 6.5V8M12 16v1.5"/></symbol><symbol id="i-target" viewBox="0 0 24 24"><path d="M12 3a9 9 0 100 18 9 9 0 000-18zM12 8a4 4 0 100 8 4 4 0 000-8z"/></symbol><symbol id="i-diamond" viewBox="0 0 24 24"><path d="M12 3l8 9-8 9-8-9z"/></symbol><symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4l9 16H3zM12 10v4M12 17h.01"/></symbol><symbol id="i-smile" viewBox="0 0 24 24"><path d="M12 3a9 9 0 100 18 9 9 0 000-18zM8 14c1 1.5 2.5 2 4 2s3-.5 4-2M9 10h.01M15 10h.01"/></symbol></defs></svg>
+<header class="hd"><div class="top"><div class="brand"><div class="logo">J</div><div><h1>Journal de trading</h1><p class="sub" id="mode">Chargement…</p></div></div><button class="add" id="add" type="button"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg>Nouveau trade</button></div></header>
+<nav class="tn" aria-label="Navigation"><button class="tb" data-t="d"><svg class="i" aria-hidden="true"><use href="#i-grid"/></svg>Vue générale</button><button class="tb" data-t="j"><svg class="i" aria-hidden="true"><use href="#i-list"/></svg>Mes trades</button><button class="tb" data-t="a"><svg class="i" aria-hidden="true"><use href="#i-chart"/></svg>Statistiques</button><button class="tb" data-t="b"><svg class="i" aria-hidden="true"><use href="#i-shield"/></svg>Bilan &amp; discipline</button><button class="tb" data-t="c"><svg class="i" aria-hidden="true"><use href="#i-wallet"/></svg>Comptes</button><button class="tb" data-t="p"><svg class="i" aria-hidden="true"><use href="#i-sliders"/></svg>Paramètres</button></nav>
+<main>
+  <div class="accbar"><select id="accSel" aria-label="Compte actif"></select><button class="lnk" id="accm" type="button"><svg class="i" aria-hidden="true"><use href="#i-sliders"/></svg>Gérer</button></div>
+  <div id="view"></div>
+</main>
+<button class="fab" id="add2" type="button" aria-label="Nouveau trade"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg></button>
+<div id="pr"></div>
+<datalist id="dl-s"></datalist>
+<div class="sh" id="sh" hidden>
+  <div class="pn" role="dialog" aria-modal="true" aria-labelledby="st">
+    <div class="ph"><h2 id="st">Nouveau trade</h2><button class="ic" id="x" aria-label="Fermer">✕</button></div>
+    <section class="sec"><h3>Trade</h3>
+      <label>Compte<select id="f-acc"></select></label>
+      <div class="g2">
+        <label>Date<input id="f-date" type="date"></label>
+        <label>Actif<select id="f-asset"></select></label>
+      </div>
+      <div class="lb">Sens</div>
+      <div class="seg" id="g-side"><button type="button" data-v="Long"><svg class="i" aria-hidden="true"><use href="#i-up"/></svg>Long</button><button type="button" data-v="Short"><svg class="i" aria-hidden="true"><use href="#i-down"/></svg>Short</button></div>
+    </section>
+    <section class="sec"><h3>1 · Analyse du setup</h3>
+      <div class="lb">Structure du marché</div>
+      <div class="seg" id="g-trend"><button type="button" data-v="Haussière"><svg class="i" aria-hidden="true"><use href="#i-up"/></svg>Haussière</button><button type="button" data-v="Baissière"><svg class="i" aria-hidden="true"><use href="#i-down"/></svg>Baissière</button><button type="button" data-v="Neutre"><svg class="i" aria-hidden="true"><use href="#i-flat"/></svg>Range</button></div>
+      <div class="lb">BOS valide</div><select id="g-bos" data-k="bos"></select>
+      <div class="lb">Session</div><select id="g-sess" data-k="sess"></select>
+      <div class="lb">Type de setup</div><select id="g-stype" data-k="stype"></select>
+      <div class="lb">Time frame d’analyse</div><select id="g-tf" data-k="tf"></select>
+      <div class="lb">Zone d’action</div><select id="g-zone" data-k="zone"></select>
+      <div class="lb">Confluence</div><select id="g-confluences" aria-label="Confluence"></select>
+      <div class="lb">IDM (inducement)</div><select id="g-idm" data-k="idm"></select>
+    </section>
+    <section class="sec"><h3>2 · Confirmation</h3>
+      <div class="lb">Type d’entrée</div><select id="g-etype" data-k="etype"></select>
+      <div class="lb">Time frame de confirmation</div><select id="g-ctf" data-k="ctf"></select>
+      <div class="entry-extra"><div class="lb">Prise de liquidité</div><select id="g-liq" data-k="liq"></select></div>
+      <div class="entry-extra"><div class="lb">CHoCH</div><select id="g-choch" data-k="choch"></select></div>
+    </section>
+    <section class="sec"><h3>3 · Gestion du trade</h3>
+      <div class="lb">Issue du trade</div>
+      <div class="seg" id="g-out"><button type="button" data-v="g"><svg class="i" aria-hidden="true"><use href="#i-up"/></svg>Gain</button><button type="button" data-v="p"><svg class="i" aria-hidden="true"><use href="#i-down"/></svg>Perte</button><button type="button" data-v="n"><svg class="i" aria-hidden="true"><use href="#i-dash"/></svg>Break-even</button></div>
+      <div class="g2">
+        <label>Risque ($)<input id="f-risk" inputmode="decimal"></label>
+        <label>Montant ($)<input id="f-res" inputmode="decimal"></label>
+      </div>
+      <div class="pv" id="pv"></div>
+      <div class="lb">Erreur principale</div><select id="g-err" data-k="err"></select>
+      <div class="lb">Émotion avant l’entrée</div><select id="g-emo" data-k="emo"></select>
+      <div class="lb">Plan respecté</div>
+      <div class="seg" id="g-plan"><button type="button" data-v="1"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Oui</button><button type="button" data-v="0"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>Non</button></div>
+    </section>
+    <section class="sec"><h3>4 · Check-list de validation</h3>
+      <div class="chips" id="g-conf" style="margin-top:10px"></div>
+    </section>
+    <section class="sec"><h3>5 · Analyse et captures</h3>
+      <label>Analyse avant le trade<textarea id="f-det" rows="4" placeholder="Contexte, niveaux clés, scénario attendu"></textarea></label>
+      <label>Analyse après le trade<textarea id="f-note" rows="4" placeholder="Déroulement, ce que tu referais autrement"></textarea></label>
+      <div class="lb">Captures d’écran</div>
+      <div class="th" id="th"></div>
+      <label class="file" id="fl"><svg class="i" aria-hidden="true"><use href="#i-camera"/></svg>Ajouter une capture<input id="f-shot" type="file" accept="image/*" multiple style="display:none"></label>
+    </section>
+    <div class="act"><button class="gh" id="del" type="button" hidden><svg class="i" aria-hidden="true"><use href="#i-trash"/></svg>Supprimer</button><button class="pr" id="sv" type="button"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Enregistrer</button></div>
+  </div>
+</div>
+<div class="sh" id="dt" hidden>
+  <div class="pn" role="dialog" aria-modal="true" aria-label="Détail du trade">
+    <div class="ph"><h2 id="dtt">Détail</h2><button class="ic" id="dtx" aria-label="Fermer">✕</button></div>
+    <div id="dtb"></div>
+    <div class="act"><button class="pr" id="dte" type="button"><svg class="i" aria-hidden="true"><use href="#i-edit"/></svg>Modifier</button></div>
+  </div>
+</div>
+<div class="sh" id="as" hidden>
+  <div class="pn" role="dialog" aria-modal="true" aria-label="Mes comptes">
+    <div class="ph"><h2>Mes comptes</h2><button class="ic" id="ax" aria-label="Fermer">✕</button></div>
+    <div id="al"></div>
+    <div class="nacc">
+      <div class="lb">Nouveau compte</div>
+      <label class="fl">Nom<input id="an" placeholder="Ex. Compte réel" autocomplete="off" enterkeyhint="done"></label>
+      <label class="fl">Capital de départ ($)<input id="ac" inputmode="decimal" placeholder="10 000"></label>
+      <div class="tch" id="acq"><button type="button" data-qcap="1000">1 000</button><button type="button" data-qcap="5000">5 000</button><button type="button" data-qcap="10000">10 000</button><button type="button" data-qcap="25000">25 000</button><button type="button" data-qcap="100000">100 000</button></div>
+      <div class="lb2">Type de compte</div>
+      <div class="tch" id="atc"><button type="button" class="on" data-atype="Personnel">Personnel</button><button type="button" data-atype="Prop firm">Prop firm</button><button type="button" data-atype="Démo">Démo</button><button type="button" data-atype="Challenge">Challenge</button></div>
+      <input id="at" type="hidden" value="Personnel">
+    </div>
+    <div class="act"><button class="pr" id="aadd" type="button"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg>Ajouter le compte</button></div>
+    <p class="ft" id="am" role="status"></p>
+  </div>
+</div>
+<div class="lbx" id="lbx" hidden><img id="lbi" alt=""></div>
+<script>
+/* ===== Stockage local : IndexedDB (grande capacité) avec cache mémoire synchrone ===== */
+const KV_DB="journal-trading",KV_STORE="kv";
+let kvBackend="ls",kvDb=null,kvPending=new Map(),kvTimer=null,kvOnChange=null,kvLastFail=0;
+class KVStore{
+  getItem(k){return Object.prototype.hasOwnProperty.call(this,k)?this[k]:null}
+  setItem(k,v){
+    v=String(v);
+    if(kvBackend!=="idb")localStorage.setItem(k,v);   // mode de secours : peut lever une erreur de quota, gérée par l'appli
+    this[k]=v;
+    if(kvBackend==="idb")kvQueue(k,v);
+    if(kvOnChange)kvOnChange(k);
+  }
+  removeItem(k){
+    if(kvBackend!=="idb")localStorage.removeItem(k);
+    delete this[k];
+    if(kvBackend==="idb")kvQueue(k,null);
+    if(kvOnChange)kvOnChange(k);
+  }
+  key(i){const a=Object.keys(this);return i<a.length?a[i]:null}
+  get length(){return Object.keys(this).length}
+}
+const kvs=new KVStore();
+function kvQueue(k,v){kvPending.set(k,v);clearTimeout(kvTimer);kvTimer=setTimeout(kvFlush,400)}
+function kvFail(e){
+  if(Date.now()-kvLastFail<20000)return;kvLastFail=Date.now();
+  toast("Impossible d’enregistrer sur l’appareil ("+(e&&e.name==="QuotaExceededError"?"mémoire pleine":"erreur")+"). Fais une sauvegarde JSON et libère de la place.");
+}
+function kvFlush(){
+  clearTimeout(kvTimer);
+  if(kvBackend!=="idb"||!kvDb||!kvPending.size)return Promise.resolve();
+  const batch=[...kvPending];kvPending=new Map();
+  return new Promise(res=>{
+    let done=false;
+    const bad=e=>{
+      if(done)return;done=true;
+      batch.forEach(([k,v])=>{if(!kvPending.has(k))kvPending.set(k,v)});
+      kvFail(e);kvTimer=setTimeout(kvFlush,15000);res();
+    };
+    let tx;
+    try{
+      tx=kvDb.transaction(KV_STORE,"readwrite");
+      const st=tx.objectStore(KV_STORE);
+      batch.forEach(([k,v])=>{if(v===null)st.delete(k);else st.put(v,k)});
+    }catch(e){return bad(e)}
+    tx.oncomplete=()=>{if(!done){done=true;res()}};
+    tx.onerror=()=>bad(tx.error);tx.onabort=()=>bad(tx.error);
+  });
+}
+async function kvLoad(){
+  let rows=null;
+  try{
+    kvDb=await Promise.race([
+      new Promise((res,rej)=>{const r=indexedDB.open(KV_DB,1);r.onupgradeneeded=()=>{r.result.createObjectStore(KV_STORE)};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);r.onblocked=()=>rej(new Error("blocked"))}),
+      new Promise((_,rej)=>setTimeout(()=>rej(new Error("timeout")),5000))
+    ]);
+    rows=await new Promise((res,rej)=>{
+      const tx=kvDb.transaction(KV_STORE,"readonly"),st=tx.objectStore(KV_STORE),keys=st.getAllKeys(),vals=st.getAll();
+      tx.oncomplete=()=>res(keys.result.map((k,i)=>[k,vals.result[i]]));tx.onerror=()=>rej(tx.error);
+    });
+    kvBackend="idb";
+  }catch(e){kvBackend="ls";kvDb=null}
+  if(kvBackend==="idb"){
+    rows.forEach(([k,v])=>{if(typeof v==="string")kvs[k]=v});
+    // Migration unique depuis l'ancien stockage (localStorage) ; l'ancienne copie n'est pas supprimée.
+    let mig=null;try{mig=localStorage.getItem("kv_mig")}catch(e){}
+    if(mig!=="1"){
+      try{
+        for(let i=0;i<localStorage.length;i++){
+          const k=localStorage.key(i);
+          if(k&&k.startsWith("tj")&&!Object.prototype.hasOwnProperty.call(kvs,k)){const v=localStorage.getItem(k);kvs[k]=v;kvPending.set(k,v)}
+        }
+        await kvFlush();
+        if(!kvPending.size)localStorage.setItem("kv_mig","1");
+      }catch(e){}
+    }
+  }else{
+    try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith("tj"))kvs[k]=localStorage.getItem(k)}}catch(e){}
+  }
+  document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")kvFlush()});
+  addEventListener("pagehide",()=>{kvFlush()});
+}
+function kvReloadLab(){
+  try{labSaved=JSON.parse(kvs.getItem("tjLabSaved")||"[]");if(!Array.isArray(labSaved))labSaved=[]}catch(e){labSaved=[]}
+  try{const w=JSON.parse(kvs.getItem("tjLabWeights")||"null");if(w&&Object.values(w).reduce((a,b)=>a+Number(b||0),0)===100)labWeights=w}catch(e){}
+}
+
+const EMO=["Calme","Confiant","Stressé","Impatient","FOMO","Frustré"],TFS=["H4","H1","M30","M15","M5","M3","M1"],CTF=["H1","M30","M15","M10","M5","M3","M2","M1"],
+CONF=["BOS valide identifié","Structure claire","Zone d’action respectée","Liquidité prise","Confirmation d’entrée","Ratio R:R acceptable","Actualité vérifiée","Plan respecté"],
+YN=["Oui","Non"],K=["sess","stype","bos","zone","idm","etype","ctf","liq","choch","err"],
+LISTS={sess:["London","New York","Asia","Overlap","Autre"],stype:["Continuation","Reversal","Breakout","Autre"],bos:YN,zone:["Order Block","FVG","Breaker Block","Golden Zone"],idm:["Non applicable","Identifié, non balayé","Balayé avant le setup"],etype:["Agressive","Confirmé"],ctf:CTF,liq:YN,choch:YN,err:["Aucune","Entrée anticipée","Entrée tardive","Stop déplacé","Risque excessif","Absence de confirmation","Surtrading","Sortie prématurée","Autre"]};
+let trades=[],weekly={},accounts=[],acc="all",delAcc="",ref=null,uid=null,dl=null,assets=null,sm="R",ready=false,tab="d",FR="",FD="",cur=null,form={side:"Long",plan:true,emo:""},delArm=false;
+let journalYear=new Date().getFullYear(),journalMonth=new Date().getMonth(),selectedJournalDate="",journalMonthOpen=false,journalDayOpen=false;
+const MONTHS=["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+const $=s=>document.querySelector(s);
+const ic=n=>`<svg class="i" aria-hidden="true"><use href="#i-${n}"/></svg>`;
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const num=v=>{const n=parseFloat(String(v).replace(/\s/g,"").replace(",","."));return isFinite(n)?n:null};
+const sg=n=>n>0?"+":n<0?"−":"";
+const fR=n=>n==null?"–":sg(n)+Math.abs(n).toFixed(1).replace(".",",")+" R";
+const fE=n=>n==null?"–":sg(n)+Math.round(Math.abs(n)).toLocaleString("fr-FR")+" $";
+const cls=n=>n>0?"pos":n<0?"neg":"zero";
+const rOf=t=>t.risk>0&&t.res!=null?t.res/t.risk:null;
+const cmp=(a,b)=>a.date>b.date?1:a.date<b.date?-1:a.id-b.id;
+const today=()=>{const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)};
+selectedJournalDate=today();
+const day=d=>new Date(d+"T12:00").toLocaleDateString("fr-FR",{weekday:"short",day:"numeric",month:"short"});
+const vt=()=>acc==="all"?trades:trades.filter(t=>t.acc===acc);
+const an=id=>(accounts.find(a=>a.id===id)||{}).name||"";
+const nAll=()=>trades.length;
+const capOf=()=>acc==="all"?(accounts.length&&accounts.every(a=>a.capital>0)?accounts.reduce((q,a)=>q+a.capital,0):0):((accounts.find(a=>a.id===acc)||{}).capital||0);
+function maxDD(ts){let c=0,pk=0,dd=0;[...ts].sort(cmp).forEach(t=>{c+=t.res||0;pk=Math.max(pk,c);dd=Math.max(dd,pk-c)});return dd}
+function balBox(s){const cap=capOf();return cap>0?`<div class="sum" style="grid-template-columns:1fr 1fr"><div><small>Solde</small><b>${Math.round(cap+s.eur).toLocaleString("fr-FR")} $</b></div><div><small>Performance</small><b class="${cls(s.eur)}">${sg(s.eur)}${Math.abs(s.eur/cap*100).toFixed(1).replace(".",",")} %</b></div></div>`:""}
+function fillAcc(){
+  const e=$("#accSel");if(acc!=="all"&&!accounts.some(a=>a.id===acc))acc="all";
+  e.innerHTML=`<option value="all">Tous les comptes</option>`+accounts.map(a=>`<option value="${esc(a.id)}">${esc(a.name)}</option>`).join("");e.value=acc;
+}
+function renderAcc(){
+  const types=["Personnel","Prop firm","Démo","Challenge"];
+  $("#al").innerHTML=accounts.map(a=>`<div class="ar${acc===a.id?" on":""}" data-id="${esc(a.id)}"><div class="av">${esc((a.name||"?").trim().charAt(0).toUpperCase()||"?")}</div><input class="an2" value="${esc(a.name)}" aria-label="Nom du compte"><button type="button" class="ic${delAcc===a.id?" cf":""}" data-delacc="${esc(a.id)}" aria-label="Supprimer le compte">${delAcc===a.id?"Oui":"✕"}</button><div class="ar2"><label class="capf"><span>$</span><input class="ac2" inputmode="decimal" value="${a.capital||""}" placeholder="Capital" aria-label="Capital de départ ($)"></label><select class="at2" aria-label="Type de compte">${types.map(v=>`<option${(a.type||"Personnel")===v?" selected":""}>${v}</option>`).join("")}</select></div></div>`).join("");
+}
+function addAcc(){
+  const m=$("#am"),n=$("#an").value.trim();
+  if(!n){m.textContent="Écris d’abord un nom pour le compte.";const i=$("#an");i.classList.remove("err");void i.offsetWidth;i.classList.add("err");i.focus();return}
+  const a={id:"a"+Date.now(),name:n,capital:num($("#ac").value),type:$("#at").value||"Personnel"};accounts.push(a);acc=a.id;
+  $("#an").value="";$("#ac").value="";$("#at").value="Personnel";syncAt();
+  if(document.activeElement)document.activeElement.blur();
+  renderAcc();render();
+  m.textContent="Compte « "+n+" » ajouté.";
+  {const el=document.querySelector('#al [data-id="'+a.id+'"]');if(el){el.classList.add("new");el.scrollIntoView({block:"nearest",behavior:"smooth"})}}
+  try{save()}catch(e){m.textContent="Compte ajouté, mais la sauvegarde a échoué."}
+}
+function delAccount(id){
+  if(accounts.length<2){toast("Garde au moins un compte.");return}
+  if(trades.some(t=>t.acc===id)){toast("Ce compte contient des trades. Supprime-les d’abord.");return}
+  if(delAcc!==id){delAcc=id;renderAcc();toast("Appuie encore pour confirmer.");return}
+  accounts=accounts.filter(a=>a.id!==id);delAcc="";if(acc===id)acc="all";save();renderAcc();render();
+}
+function syncAt(){const v=$("#at").value||"Personnel";document.querySelectorAll("#atc button").forEach(b=>b.classList.toggle("on",b.dataset.atype===v))}
+document.addEventListener("click",e=>{
+  const b=e.target.closest&&e.target.closest("#atc button,#acq button");if(!b)return;
+  if(b.dataset.atype){$("#at").value=b.dataset.atype;syncAt()}
+  else if(b.dataset.qcap){$("#ac").value=b.dataset.qcap}
+});
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"&&!$("#as").hidden)$("#as").hidden=true;
+  else if(e.key==="Enter"&&e.target&&(e.target.id==="an"||e.target.id==="ac")){e.preventDefault();$("#aadd").click()}
+});
+document.addEventListener("input",e=>{if(e.target&&e.target.id==="an")e.target.classList.remove("err")});
+$("#as").addEventListener("click",e=>{if(e.target.id==="as")$("#as").hidden=true});
+function toast(m){const e=document.createElement("div");e.className="toast";e.textContent=m;document.body.append(e);setTimeout(()=>e.remove(),3200)}
+
+async function init(){
+  // 1) Charger immédiatement les données locales : aucune connexion externe
+  // ne doit empêcher l'ouverture du journal.
+  try{const l=JSON.parse(kvs.getItem("tj")||"[]");if(Array.isArray(l))trades=l}catch(e){}
+  try{const l=JSON.parse(kvs.getItem("tja")||"[]");if(Array.isArray(l))accounts=l}catch(e){}
+  try{const c=kvs.getItem("tjc");if(c)acc=c}catch(e){}
+  try{const w=JSON.parse(kvs.getItem("tjw")||"null");if(w)weekly=w}catch(e){}
+
+  let mig=false;
+  accounts.forEach(a=>{if(!a.type){a.type="Personnel";mig=true}});
+  trades.forEach(t=>{if(t.etype==="Confirmée"){t.etype="Confirmé";mig=true}});
+  if(!accounts.length){accounts=[{id:"a1",name:"Compte principal",capital:null}];mig=true}
+  trades.forEach(t=>{if(!t.acc){t.acc=accounts[0].id;mig=true}});
+  if(mig){try{kvs.setItem("tj",JSON.stringify(trades));kvs.setItem("tja",JSON.stringify(accounts))}catch(e){}}
+  ready=true;
+  render();
+
+  // 2) Services facultatifs en arrière-plan. Ils ne bloquent jamais l'interface.
+  const withTimeout=(promise,ms=2500)=>Promise.race([promise,new Promise((_,reject)=>setTimeout(()=>reject(new Error("timeout")),ms))]);
+  // Hors de Claude (hébergement classique) : aucun service Claude, seules les données locales + Google Drive sont utilisées.
+  if(typeof claude==="undefined")return;
+  (async()=>{
+    try{
+      const U=await withTimeout(Promise.resolve(claude.use("user")));
+      uid=U?await withTimeout(Promise.resolve(U.id())):null;
+      const db=uid?await withTimeout(Promise.resolve(claude.use("db"))):null;
+      if(db){
+        const remoteRef=db.collection("data/users/"+uid).doc("journal");
+        const snap=await withTimeout(Promise.resolve(remoteRef.get()));
+        ref=remoteRef;
+        if(snap.exists){
+          const d=JSON.parse(JSON.stringify(snap.data()));
+          // Ne jamais remplacer des données locales existantes par une copie distante.
+          if(!trades.length&&!accounts.some(a=>a.id!=="a1")){
+            trades=Array.isArray(d.trades)?d.trades:[];
+            accounts=Array.isArray(d.accounts)?d.accounts:accounts;
+            weekly=d.weekly||weekly;
+            try{kvs.setItem("tj",JSON.stringify(trades));kvs.setItem("tja",JSON.stringify(accounts));kvs.setItem("tjw",JSON.stringify(weekly))}catch(e){}
+            renderAcc();render();
+          }else{
+            remoteRef.set({trades,accounts,weekly,updated:Date.now()}).catch(()=>{});
+          }
+        }else if(trades.length||accounts.length){remoteRef.set({trades,accounts,weekly,updated:Date.now()}).catch(()=>{})}
+      }
+    }catch(e){ref=null}
+    try{dl=await withTimeout(Promise.resolve(claude.use("downloads")));render()}catch(e){}
+    try{assets=await withTimeout(Promise.resolve(claude.use("assets")))}catch(e){}
+  })();
+}
+function save(){
+  try{kvs.setItem("tj",JSON.stringify(trades));kvs.setItem("tja",JSON.stringify(accounts));kvs.setItem("tjw",JSON.stringify(weekly))}catch(e){toast("Mémoire de l’appareil pleine : retire des captures.")}
+  if(ref)ref.set({trades,accounts,weekly,updated:Date.now()}).catch(()=>toast("Synchronisation impossible. Copie gardée sur cet appareil."));
+}
+
+function stats(ts){
+  const rs=ts.map(rOf).filter(r=>r!=null),w=ts.filter(t=>t.res>0),l=ts.filter(t=>t.res<0);
+  const gR=w.reduce((a,t)=>a+(rOf(t)||0),0),lR=-l.reduce((a,t)=>a+(rOf(t)||0),0),sum=rs.reduce((a,b)=>a+b,0);
+  return{n:ts.length,eur:ts.reduce((a,t)=>a+(t.res||0),0),sumR:sum,win:ts.length?w.length/ts.length*100:null,
+    aw:w.length?gR/w.length:null,al:l.length?lR/l.length:null,pf:lR>0?gR/lR:null,ex:rs.length?sum/rs.length:null,
+    plan:ts.length?ts.filter(t=>t.plan).length/ts.length*100:null,best:rs.length?Math.max(...rs):null,worst:rs.length?Math.min(...rs):null};
+}
+function curve(ts,m){
+  const f=t=>m==="R"?rOf(t):t.res,a=ts.filter(t=>f(t)!=null).sort(cmp);
+  if(a.length<2)return `<p class="ft">Ajoute au moins 2 trades pour voir la courbe.</p>`;
+  let c=0;const p=[0];a.forEach(t=>{c+=f(t);p.push(c)});
+  const mn=Math.min(...p),mx=Math.max(...p),rg=(mx-mn)||1,W=300,H=120,P=10;
+  const X=i=>P+i*(W-2*P)/(p.length-1),Y=v=>H-P-(v-mn)/rg*(H-2*P);
+  const pts=p.map((v,i)=>X(i).toFixed(1)+","+Y(v).toFixed(1)).join(" "),col=c>=0?"var(--gain)":"var(--loss)",tot=m==="R"?fR(c):fE(c);
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Courbe de performance cumulée"><line x1="0" x2="${W}" y1="${Y(0)}" y2="${Y(0)}" stroke="var(--line)" stroke-dasharray="3 3"/><polyline points="${pts}" fill="none" stroke="${col}" stroke-width="2.5" stroke-linejoin="round"/><circle cx="${X(p.length-1)}" cy="${Y(c)}" r="4" fill="${col}"/></svg><div class="dh" style="margin:2px 2px 0"><span>${a.length} trades</span><b class="${cls(c)}">${tot}</b></div>`;
+}
+function donut(w,l,n){
+  const t=w+l+n||1,C=251.3;let o=0;
+  const seg=(v,c)=>{const d=v/t*C,r=`<circle cx="50" cy="50" r="40" fill="none" stroke="${c}" stroke-width="12" stroke-dasharray="${d} ${C-d}" stroke-dashoffset="${-o}" transform="rotate(-90 50 50)"/>`;o+=d;return r};
+  return `<svg viewBox="0 0 100 100" width="120" role="img" aria-label="Répartition gagnants, perdants, break-even">${seg(w,"var(--gain)")}${seg(l,"var(--loss)")}${seg(n,"var(--mute)")}<text x="50" y="56" text-anchor="middle" font-size="19" font-weight="600" fill="var(--ink)">${Math.round(w/t*100)} %</text></svg>`;
+}
+function render(){
+  document.querySelectorAll(".tb").forEach(b=>b.setAttribute("aria-current",b.dataset.t===tab?"page":"false"));
+  $("#mode").textContent=!ready?"Chargement…":ref?"Données privées, synchronisées avec ton compte":"Données enregistrées sur cet appareil uniquement";
+  $("#mode").textContent+=" · v12"+gdBadge();
+  fillAcc();
+  $("#view").innerHTML=!ready?"":({d:dashView,j:journal,a:analyseView,b:bilanView,c:comptesView,p:paramView}[tab]||dashView)();
+  animCounts();
+}
+function journal(){
+  const allTrades=vt();
+  if(!allTrades.length)return `<div class="empty">${nAll()?"Aucun trade sur ce compte.":"Aucun trade pour l’instant.<br>Appuie sur « Nouveau trade » pour saisir le premier, idéalement avant d’entrer en position."}</div>`;
+  const years=[...new Set(allTrades.map(t=>Number((t.date||"").slice(0,4))).filter(Boolean))].sort((a,b)=>b-a);
+  if(!years.includes(journalYear))journalYear=years[0]||new Date().getFullYear();
+  const trades=allTrades.filter(t=>(!FR||(FR==="Win"?t.res>0:FR==="Loss"?t.res<0:t.res===0))&&(!FD||t.side===FD));
+  const inYear=trades.filter(t=>Number((t.date||"").slice(0,4))===journalYear);
+  const months=MONTHS.map((name,i)=>({name,i,ts:inYear.filter(t=>Number(t.date.slice(5,7))===i+1)}));
+  const monthIcons=["🍃","〰️","♨️","✨","☀️","☁️","🌿","🌊","🔥","💫","🍂","❄️"];
+  const monthShort=["JAN","FÉV","MAR","AVR","MAI","JUIN","JUIL","AOÛT","SEP","OCT","NOV","DÉC"];
+  const tileCards=months.map(m=>{const st=stats(m.ts),res=st.sumR,empty=!m.ts.length,status=empty?"VIDE":res>0?"POSITIF":res<0?"NÉGATIF":"NEUTRE",badge=empty?"empty":res>0?"pos":res<0?"neg":"flat";return `<button type="button" class="monthtile" data-month="${m.i}" aria-pressed="${journalMonth===m.i}"><span class="mtop"><span class="monthicon" aria-hidden="true">${monthIcons[m.i]}</span><span class="mn">${String(m.i+1).padStart(2,"0")} · ${monthShort[m.i]}</span></span><strong>${String(m.ts.length).padStart(2,"0")}</strong><span class="mres">${empty?"Aucun trade":`Trades · ${fR(res)}`}</span><span class="mbadge ${badge}">${status}</span></button>`});
+  const mt=months[journalMonth],ms=stats(mt.ts),win=mt.ts.filter(t=>t.res>0).length,loss=mt.ts.filter(t=>t.res<0).length;
+  const first=new Date(journalYear,journalMonth,1),offset=(first.getDay()+6)%7,days=new Date(journalYear,journalMonth+1,0).getDate();
+  const byDate={};mt.ts.forEach(t=>(byDate[t.date]??=[]).push(t));
+  if(!selectedJournalDate.startsWith(`${journalYear}-${String(journalMonth+1).padStart(2,"0")}`))selectedJournalDate=`${journalYear}-${String(journalMonth+1).padStart(2,"0")}-01`;
+  const cells=Array.from({length:offset},()=>'<span class="calday blank"></span>');
+  for(let d=1;d<=days;d++){const date=`${journalYear}-${String(journalMonth+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`,ts=byDate[date]||[],net=ts.reduce((q,t)=>q+(rOf(t)||0),0),state=!ts.length?"":net>0?"positive":net<0?"negative":"flat";cells.push(`<button type="button" class="calday ${ts.length?"has-trades "+state:""}" data-date="${date}" aria-pressed="${selectedJournalDate===date}">${d}</button>`)}
+  const dayTrades=(byDate[selectedJournalDate]||[]).sort(cmp).reverse(),ds=stats(dayTrades),dw=dayTrades.filter(t=>t.res>0).length,dloss=dayTrades.filter(t=>t.res<0).length;
+  const selectedLabel=new Date(selectedJournalDate+"T12:00").toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+  const detail=dayTrades.length?`<div class="daydetail"><div class="dayhero"><div class="eyebrow">${selectedLabel}</div><div class="dayresult ${cls(ds.sumR)}">${fR(ds.sumR)}</div><div class="daymetrics"><div><b>${ds.n}</b><small>Trades</small></div><div><b>${dw}</b><small>Gagnants</small></div><div><b>${dloss}</b><small>Perdants</small></div><div><b>${ds.win==null?"—":Math.round(ds.win)+"%"}</b><small>Réussite</small></div></div></div><div class="daytitle">Trades de la journée</div>${dayTrades.map(rowHtml).join("")}</div>`:`<div class="empty" style="margin-top:12px">Aucun trade enregistré pour le ${selectedLabel}.<br>Choisis une autre date ou ajoute un trade.</div>`;
+  const monthPanel=`<div class="month-open-panel"><div class="monthstats"><div class="eyebrow">BILAN DU MOIS · ${mt.name.toUpperCase()} ${journalYear}</div><div class="bigresult ${cls(ms.sumR)}">${fR(ms.sumR)}</div><div class="statgrid"><div><b>${ms.n}</b><small>Trades</small></div><div><b>${win}</b><small>Gagnants</small></div><div><b>${loss}</b><small>Perdants</small></div><div><b>${ms.win==null?"—":Math.round(ms.win)+"%"}</b><small>Réussite</small></div></div></div><div class="calcard"><div class="calhead"><h3>${mt.name} ${journalYear}</h3><span class="sub" style="margin:0">${mt.ts.length} trades</span></div><div class="calgrid">${["L","M","M","J","V","S","D"].map(d=>`<span class="calwd">${d}</span>`).join("")}${cells.join("")}</div><p class="ft">Vert : journée positive · Rouge : journée négative · Gris : résultat nul. Sélectionne une date pour ouvrir ses détails.</p></div></div>`;
+  const yearSelect=`<div class="yearbar"><strong>Année</strong><select id="journalYear">${years.map(y=>`<option value="${y}"${y===journalYear?" selected":""}>${y}</option>`).join("")}</select></div>`;
+  if(journalMonthOpen){
+    if(journalDayOpen){
+      return `<div class="month-screen day-screen"><div class="month-screen-head"><button type="button" class="back-month" data-day-back>← Calendrier</button><div class="month-screen-title"><strong>${selectedLabel}</strong><small>Détail de la journée · ${mt.name} ${journalYear}</small></div></div>${detail}</div>`;
+    }
+    return `<div class="month-screen"><div class="month-screen-head"><button type="button" class="back-month" data-month-back>← Retour aux mois</button><div class="month-screen-title"><strong>${mt.name} ${journalYear}</strong><small>Calendrier et performances du mois</small></div></div>${flt()}${yearSelect}${monthPanel}</div>`;
+  }
+  let h=`<div class="sh2"><div><h2>Mes trades</h2><div class="sub">Historique organisé par année, mois et journée</div></div></div>${flt()}${yearSelect}<div class="monthgrid">${tileCards.join("")}</div>`;
+  return h;
+}
+const flt=()=>`<div class="flt"><select id="fr" aria-label="Résultat">${["","Win","Loss","BE"].map(v=>`<option value="${v}"${v===FR?" selected":""}>${v||"Tous les résultats"}</option>`).join("")}</select><select id="fd" aria-label="Direction">${["","Long","Short"].map(v=>`<option value="${v}"${v===FD?" selected":""}>${v||"Toutes directions"}</option>`).join("")}</select></div>`;
+const mc=(n,c,lab,v,sub,vc="")=>`<div class="mc"><div class="mi ${c}">${ic(n)}</div><div class="ml">${lab}</div><div class="mv ${vc}">${v}</div><div class="ms">${sub}</div></div>`;
+const pcx=x=>x==null?"–":Math.round(x)+" %";
+function rowHtml(t){
+  const r=rOf(t),n=(t.shots||[]).length;
+  const sub=[acc==="all"&&accounts.length>1?an(t.acc):"",t.tf,t.stype||"Sans setup",t.trend,t.emo].filter(Boolean).map(esc).join(" · ")+(t.plan?"":' · <span class="flag">plan non respecté</span>')+(n?" · "+n+" capture"+(n>1?"s":""):"");
+  return `<button class="row" data-id="${t.id}"><i class="${cls(t.res)}"></i><span class="rm"><span class="${t.side==="Short"?"neg":"pos"}">${ic(t.side==="Short"?"down":"up")}</span> <b>${esc(t.asset||"Sans actif")}</b> ${esc(t.side)}<small>${sub}</small></span><span class="rv"><b class="${cls(r)}">${fR(r)}</b><small>${fE(t.res)}</small></span></button>`;
+}
+function dashView(){
+  const trades=vt(),s=stats(trades);
+  let h=`<div class="sh2"><div><h2>Tableau de bord</h2><div class="sub">Analyse · Progression · Réussite</div></div><div class="sub">${acc==="all"?"Tous les comptes":esc(an(acc))}</div></div>`;
+  if(!trades.length)return h+`<div class="empty">${nAll()?"Aucun trade sur ce compte.":"Aucun trade pour l’instant."}<br>Appuie sur « + Nouveau trade » pour commencer.</div>`;
+  const w=trades.filter(t=>t.res>0).length,l=trades.filter(t=>t.res<0).length,n=trades.length-w-l,dd=maxDD(trades),cap=capOf(),cnt=f=>trades.filter(f).length;
+  const dot=c=>`<span class="dot" style="background:${c}"></span>`,pt=v=>Math.round(v/trades.length*100)+" %";
+  h+=balBox(s)+`<div class="cards">`+mc("trend","g","Taux de réussite",pcx(s.win),`${w} gagnants · ${l} perdants`)+mc("dollar","b","Profit total",fE(s.eur),"Gains moins pertes",cls(s.eur))+mc("target","a","R moyen",fR(s.ex),"Espérance par trade",cls(s.ex))+mc("list","v","Total trades",trades.length,`${n} break-even`)+mc("check","g","Plan respecté",cnt(t=>t.plan),pcx(s.plan)+" des trades")+mc("diamond","b","BOS valide",cnt(t=>t.bos==="Oui"),"trades avec BOS")+mc("alert","r","Hors plan",cnt(t=>!t.plan),"à analyser","neg")+mc("x","r","Erreurs déclarées",cnt(t=>t.err&&t.err!=="Aucune"),"trades concernés")+`</div>`;
+  h+=`<div class="card"><h2>Courbe de capital</h2><div class="cvt"><button data-cv="R" aria-pressed="${sm==="R"}">En R</button><button data-cv="$" aria-pressed="${sm==="$"}">En $</button></div>${curve(trades,sm)}</div>`;
+  h+=`<div class="card"><h2>Répartition des résultats</h2><div class="wr">${donut(w,l,n)}<ul><li>${dot("var(--gain)")}${w} gagnants (${pt(w)})</li><li>${dot("var(--loss)")}${l} perdants (${pt(l)})</li><li>${dot("var(--mute)")}${n} break-even (${pt(n)})</li></ul></div></div>`;
+  const k=(a,v,c="")=>`<div class="k"><small>${a}</small><b class="${c}">${v}</b></div>`;
+  h+=`<div class="card"><h2>Indicateurs avancés</h2><div class="kg">${k("Profit factor",s.pf==null?"–":s.pf.toFixed(2).replace(".",","))}${k("Drawdown max",dd>0?fE(-dd):"–","neg")}${k("Gain moyen",fR(s.aw),"pos")}${k("Perte moyenne",s.al==null?"–":fR(-s.al),"neg")}${k("Meilleur trade",fR(s.best),cls(s.best))}${k("Pire trade",fR(s.worst),cls(s.worst))}</div></div>`;
+  return h+`<div class="h3s">Trades récents</div>`+[...trades].sort(cmp).reverse().slice(0,5).map(rowHtml).join("");
+}
+function bilanView(){
+  const trades=vt(),s=stats(trades);
+  let h=`<div class="sh2"><div><h2>Bilan &amp; discipline</h2><div class="sub">Respect du plan · Erreurs · Revue</div></div></div>`;
+  if(trades.length){
+    const top=fn=>{const g=splitBy(trades,fn).sort((a,b)=>b.n-a.n)[0];return g?esc(g.k):"–"};
+    const hp=trades.filter(t=>!t.plan);
+    h+=`<div class="cards">`+mc("check","g","Plan respecté",pcx(s.plan),`${trades.length-hp.length} sur ${trades.length}`)+mc("alert","r","Hors plan",hp.length,fR(hp.reduce((q,t)=>q+(rOf(t)||0),0))+" au total","neg")+mc("x","r","Erreur fréquente",top(t=>t.err&&t.err!=="Aucune"?t.err:""),"la plus déclarée")+mc("smile","a","Émotion fréquente",top(t=>t.emo),"avant l’entrée")+`</div>`;
+    h+=tbl("Erreurs déclarées",t=>t.err&&t.err!=="Aucune"?t.err:"",trades)+tbl("Par émotion",t=>t.emo,trades);
+  }
+  return h+reviewCard();
+}
+function comptesView(){
+  return `<div class="sh2"><div><h2>Mes comptes</h2><div class="sub">Capital · Solde · Performance</div></div></div>`+accounts.map(a=>{
+    const ts=trades.filter(t=>t.acc===a.id),s=stats(ts),cap=a.capital||0,m=v=>Math.round(v).toLocaleString("fr-FR")+" $";
+    return `<div class="card"><h2>${esc(a.name)}</h2><div class="kg"><div class="k"><small>Capital de départ</small><b>${cap?m(cap):"–"}</b></div><div class="k"><small>Solde</small><b>${cap?m(cap+s.eur):"–"}</b></div><div class="k"><small>Résultat</small><b class="${cls(s.eur)}">${fE(s.eur)}</b></div><div class="k"><small>Trades · réussite</small><b>${s.n} · ${pcx(s.win)}</b></div></div></div>`}).join("")+`<button class="lnk" id="accm" type="button">${ic("sliders")}Gérer les comptes</button>`;
+}
+function paramView(){
+  const n=nAll();
+  return `<div class="sh2"><div><h2>Paramètres</h2><div class="sub">Données · Sauvegarde</div></div></div><div class="card"><h2>Protection de tes données</h2><p class="ms" style="margin:0 0 12px">${ref?"Données privées, synchronisées avec ton compte.":"Données enregistrées sur cet appareil uniquement."} ${n} trade${n>1?"s":""}, ${accounts.length} compte${accounts.length>1?"s":""}.</p><button class="lnk" id="fullBackup">${ic("dl")}Sauvegarder toutes mes données (JSON)</button><p class="ft" style="margin:8px 0 14px">Inclut les trades, comptes, revues, réglages et captures locales. Les captures en ligne sont intégrées si leur serveur l’autorise ; sinon leur lien est conservé.</p><button class="lnk" id="chooseRestore">${ic("dl")}Restaurer une sauvegarde</button><input id="restoreFile" type="file" accept=".json,application/json" hidden><p class="ft" style="margin:8px 0 0">La restauration vérifie le fichier et crée d’abord une sauvegarde de tes données actuelles.</p><div id="backupMsg"></div><hr style="border:0;border-top:1px solid var(--line);margin:16px 0"><h3 style="margin:0 0 8px">Export tableau (CSV)</h3><button class="lnk" id="csv">${ic("dl")}${dl?"Exporter en CSV":"Copier mes données"}</button><div id="cp"></div></div>${gdCard()}<div class="card"><h2>À propos</h2><p class="ms" style="margin:0">Journal de trading · v10. Devise : dollar ($).</p></div>`;
+}
+const wr=a=>a.length?a.filter(t=>t.res>0).length/a.length*100:null;
+function splitBy(ts,fn){const g={};ts.forEach(t=>{const k=fn(t);if(k)(g[k]=g[k]||[]).push(t)});return Object.entries(g).map(([k,a])=>({k,a,n:a.length,w:wr(a),R:a.reduce((q,t)=>q+(rOf(t)||0),0)}))}
+function coach(ts){
+  const up=[],dn=[];
+  [["Session",t=>t.sess],["Time frame",t=>t.tf],["Zone d’action",t=>t.zone],["Structure",t=>t.trend],["Type d’entrée",t=>t.etype]].forEach(([l,fn])=>{
+    const g=splitBy(ts,fn).filter(x=>x.n>=3).sort((a,b)=>b.R-a.R);
+    if(g.length>1){const b=g[0],w=g[g.length-1];
+      if(b.R>0)up.push(`${l} : ${b.k} est ton meilleur contexte (${fR(b.R)}, ${Math.round(b.w)} % de réussite, ${b.n} trades).`);
+      if(w.R<0)dn.push(`${l} : ${w.k} te coûte le plus (${fR(w.R)}, ${Math.round(w.w)} % de réussite, ${w.n} trades).`)}
+  });
+  const er=splitBy(ts,t=>t.err&&t.err!=="Aucune"?t.err:"").sort((a,b)=>b.n-a.n);
+  if(er[0])dn.push(`Erreur la plus fréquente : ${er[0].k} (${er[0].n} fois).`);
+  const bY=ts.filter(t=>t.bos==="Oui"),bN=ts.filter(t=>t.bos==="Non");
+  if(bY.length>=3&&bN.length>=3)(wr(bY)>wr(bN)?up:dn).push(`BOS : ${Math.round(wr(bY))} % de réussite avec un BOS valide, contre ${Math.round(wr(bN))} % sans.`);
+  const pN=ts.filter(t=>!t.plan);
+  if(pN.length)dn.push(`${pN.length} trade${pN.length>1?"s":""} hors plan : ${fR(pN.reduce((q,t)=>q+(rOf(t)||0),0))} au total.`);
+  if(!up.length)up.push("Pas encore assez de données pour dégager des points forts.");
+  if(!dn.length)dn.push("Aucun point faible net pour l’instant.");
+  return{up,dn};
+}
+function tbl(ti,fn,ts){
+  const r=splitBy(ts,fn).sort((a,b)=>b.R-a.R);
+  return r.length?`<div class="card"><h2>${ti}</h2><table><tr><th></th><th>Trades</th><th>Réussite</th><th>Total</th></tr>${r.map(x=>`<tr><td>${esc(x.k)}</td><td>${x.n}</td><td>${Math.round(x.w)} %</td><td class="${cls(x.R)}">${fR(x.R)}</td></tr>`).join("")}</table></div>`:"";
+}
+function wk(){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()+3-(d.getDay()+6)%7);const y=new Date(d.getFullYear(),0,4);return d.getFullYear()+"-S"+String(1+Math.round(((d-y)/864e5-3+(y.getDay()+6)%7)/7)).padStart(2,"0")}
+let labTab="overview";
+let labPeriod="all",labFrom="",labTo="",labField="",labValue="",labFilterValues={};
+let labCompareField="sess",labCompareA="",labCompareB="",labCompareConfA=[],labCompareConfB=[];
+let labWeights={expectancy:30,pf:25,dd:20,regularity:15,sample:10};
+let labSaved=[];
+try{labSaved=JSON.parse(kvs.getItem("tjLabSaved")||"[]");if(!Array.isArray(labSaved))labSaved=[]}catch(e){labSaved=[]}
+try{const savedWeights=JSON.parse(kvs.getItem("tjLabWeights")||"null");if(savedWeights&&Object.values(savedWeights).reduce((a,b)=>a+Number(b||0),0)===100)labWeights=savedWeights}catch(e){}
+const LAB_FIELDS={accountType:"Type de compte",asset:"Actif",side:"Direction",trend:"Structure",tf:"Timeframe",ctf:"TF confirmation",stype:"Type de setup",sess:"Session",bos:"BOS",zone:"Zone d’action",confluences:"Confluences",idm:"IDM",liq:"Liquidité",choch:"CHoCH",etype:"Type d’entrée",plan:"Respect du plan",emo:"Émotion",err:"Erreur"};
+const labVal=(t,k)=>k==="plan"?(t.plan===true?"Oui":t.plan===false?"Non":"Non renseigné"):k==="accountType"?((accounts.find(a=>a.id===t.acc)||{}).type||"Personnel"):k==="confluences"?((Array.isArray(t.confluences)?t.confluences:[t.confluences].filter(Boolean)).join(" + ")||"Aucune"):((t[k]||"Non renseigné"));
+const labPeriodLabel=()=>({all:"Toutes les dates",7:"7 derniers jours",30:"30 derniers jours",90:"3 derniers mois",365:"12 derniers mois",custom:"Dates personnalisées"}[labPeriod]||"Toutes les dates");
+function labBaseTrades(){let a=vt().filter(t=>t&&t.res!==null&&t.res!==undefined&&t.res!==""&&Number.isFinite(Number(t.res)));const now=new Date();now.setHours(23,59,59,999);let cutoff=null;if(labPeriod!=="all"&&labPeriod!=="custom"){cutoff=new Date();cutoff.setDate(cutoff.getDate()-Number(labPeriod));cutoff.setHours(0,0,0,0)}return a.filter(t=>{const d=new Date((t.date||"")+"T12:00:00");if(!Number.isFinite(d.getTime()))return false;if(cutoff&&d<cutoff)return false;if(labPeriod==="custom"){if(labFrom&&t.date<labFrom)return false;if(labTo&&t.date>labTo)return false}if(Object.entries(labFilterValues).some(([k,v])=>v&&labVal(t,k)!==v))return false;if(labField&&labValue&&labVal(t,labField)!==labValue)return false;return true}).sort(cmp)}
+function labMetrics(ts){const a=ts.filter(t=>t.res!==null&&t.res!==undefined&&t.res!==""&&Number.isFinite(Number(t.res))),rs=a.map(rOf).filter(v=>v!==null&&Number.isFinite(v));const wins=a.filter(t=>Number(t.res)>0),loss=a.filter(t=>Number(t.res)<0),be=a.filter(t=>Number(t.res)===0);const grossWin=rs.filter(x=>x>0).reduce((x,y)=>x+y,0),grossLoss=-rs.filter(x=>x<0).reduce((x,y)=>x+y,0),exp=rs.length?rs.reduce((x,y)=>x+y,0)/rs.length:null;let curve=0,peak=0,dd=0;[...a].sort(cmp).forEach(t=>{const r=rOf(t);if(r==null)return;curve+=r;peak=Math.max(peak,curve);dd=Math.max(dd,peak-curve)});const mean=exp??0,sd=rs.length?Math.sqrt(rs.reduce((q,x)=>q+(x-mean)**2,0)/rs.length):null;return{n:a.length,nR:rs.length,w:wins.length,l:loss.length,be:be.length,win:(wins.length+loss.length)?wins.length/(wins.length+loss.length)*100:null,pf:grossLoss>0?grossWin/grossLoss:(grossWin>0?Infinity:null),exp,netR:rs.reduce((x,y)=>x+y,0),net:a.reduce((x,t)=>x+Number(t.res||0),0),dd,sd,plan:a.length?a.filter(t=>t.plan).length/a.length*100:null}}
+function labFmt(v,d=2){return v==null||!Number.isFinite(v)?"—":v.toFixed(d).replace(".",",")}
+function labPF(v){return v===Infinity?"∞":v==null?"—":labFmt(v)}
+function labPct(v){return v==null?"—":labFmt(v,1)+" %"}
+function labCard(label,value,sub="",tone=""){return `<div class="mc"><div class="ml">${label}</div><div class="mv ${tone}">${value}</div><div class="ms">${sub}</div></div>`}
+function labTable(title,groups){if(!groups.length)return `<div class="card"><h2>${title}</h2><div class="labempty">Pas assez de données renseignées pour cette analyse.</div></div>`;return `<div class="card"><h2>${title}</h2><div class="labtablewrap"><table><tr><th>Configuration</th><th>Trades</th><th>Réussite</th><th>Espérance R</th><th>PF</th><th>Total R</th></tr>${groups.map(g=>`<tr><td>${esc(g.name)}</td><td>${g.m.n}</td><td>${labPct(g.m.win)}</td><td>${labFmt(g.m.exp)}</td><td>${labPF(g.m.pf)}</td><td class="${cls(g.m.netR)}">${fR(g.m.netR)}</td></tr>`).join("")}</table></div></div>`}
+function labGroups(ts,key){const map=new Map();ts.forEach(t=>{const v=labVal(t,key)||"Non renseigné";if(!map.has(v))map.set(v,[]);map.get(v).push(t)});return [...map.entries()].map(([name,a])=>({name,ts:a,m:labMetrics(a)})).sort((a,b)=>b.m.n-a.m.n)}
+function labConfluences(t){const a=[...(Array.isArray(t.confluences)?t.confluences:[t.confluences].filter(Boolean)).filter(c=>c!=="Aucune")];if(t.bos==="Oui")a.push("BOS");if(t.idm&&t.idm!=="Non applicable")a.push("IDM");if(t.liq==="Oui")a.push("Liquidité");if(t.choch==="Oui")a.push("CHoCH");if(t.zone&&t.zone!=="Autre")a.push(t.zone);(t.conf||[]).forEach(c=>{if(["BOS valide identifié","Structure claire","Zone d’action respectée","Liquidité prise","Confirmation d’entrée"].includes(c)){const m={"BOS valide identifié":"BOS","Structure claire":"Structure","Zone d’action respectée":"Zone respectée","Liquidité prise":"Liquidité","Confirmation d’entrée":"Confirmation"}[c];if(!a.includes(m))a.push(m)}});return [...new Set(a)].sort()}
+function labComboGroups(ts){const map=new Map();ts.forEach(t=>{const c=labConfluences(t);if(!c.length)return;const k=c.join(" + ");if(!map.has(k))map.set(k,[]);map.get(k).push(t)});return [...map.entries()].map(([name,a])=>({name,ts:a,m:labMetrics(a)})).sort((a,b)=>b.m.n-a.m.n)}
+function labRankScore(m){const clamp=x=>Math.max(0,Math.min(100,x));const ex=m.exp==null?0:clamp((m.exp+1)*50);const pf=m.pf==null?0:m.pf===Infinity?100:clamp(m.pf/3*100);const dd=clamp(100/(1+m.dd));const reg=m.sd==null?0:clamp(100/(1+m.sd));const sample=clamp(m.nR/20*100);return (ex*labWeights.expectancy+pf*labWeights.pf+dd*labWeights.dd+reg*labWeights.regularity+sample*labWeights.sample)/100}
+function labRankings(ts){const all=[];Object.keys(LAB_FIELDS).forEach(k=>labGroups(ts,k).forEach(g=>{if(g.name!=="Non renseigné")all.push({...g,type:LAB_FIELDS[k]})}));labComboGroups(ts).forEach(g=>all.push({...g,type:"Confluences SMC"}));const seen=new Set();return all.filter(g=>g.m.nR>0).filter(g=>{const k=g.type+"|"+g.name;if(seen.has(k))return false;seen.add(k);return true}).map(g=>({...g,score:labRankScore(g.m)})).sort((a,b)=>b.score-a.score)}
+function labOverview(ts){const m=labMetrics(ts);const ranks=labRankings(ts),ready=ranks.filter(x=>x.m.nR>=20),small=ranks.filter(x=>x.m.nR<20);const best=ready[0];const leaders=ready.length?[["Meilleur taux de réussite",[...ready].filter(x=>x.m.win!=null).sort((a,b)=>b.m.win-a.m.win)[0],x=>labPct(x.m.win)],["Meilleure espérance",[...ready].filter(x=>x.m.exp!=null).sort((a,b)=>b.m.exp-a.m.exp)[0],x=>fR(x.m.exp)],["Meilleur Profit Factor",[...ready].filter(x=>x.m.pf!=null).sort((a,b)=>b.m.pf-a.m.pf)[0],x=>labPF(x.m.pf)],["Meilleur résultat cumulé",[...ready].sort((a,b)=>b.m.netR-a.m.netR)[0],x=>fR(x.m.netR)],["Drawdown le plus faible",[...ready].sort((a,b)=>a.m.dd-b.m.dd)[0],x=>fR(-x.m.dd)]]:[];return `<div class="sh2"><div><h2>Vue analytique</h2><div class="sub">${labPeriodLabel()} · ${ts.length} trades retenus</div></div></div><div class="cards">${labCard("Trades analysés",m.n,m.nR+" avec résultat en R")}${labCard("Taux de réussite",labPct(m.win),m.w+" gagnants · "+m.l+" perdants")}${labCard("Espérance",m.exp==null?"—":fR(m.exp),"Par trade avec R renseigné",cls(m.exp))}${labCard("Profit factor",labPF(m.pf),"Gains bruts / pertes brutes")}${labCard("Résultat cumulé",fR(m.netR),"Sur "+m.nR+" trades en R",cls(m.netR))}${labCard("Drawdown max",fR(-m.dd),"Calculé sur la courbe cumulée","neg")}</div>${best?`<div class="card"><h2>Configuration en tête du classement</h2><div class="labrow"><span><b>${esc(best.name)}</b><div class="labmuted">${esc(best.type)} · ${best.m.nR} trades avec R exploitable</div></span><b class="labscore">${labFmt(best.score,1)}/100</b></div><div class="labmuted">Score indicatif calculé avec les pondérations actuelles. Il ne prédit pas les performances futures.</div></div>`:`<div class="card"><h2>Classement</h2><div class="labempty">Aucune configuration n'atteint encore les 20 trades requis pour le classement principal.</div></div>`}${leaders.length?`<div class="card"><h2>Meilleurs indicateurs distincts</h2>${leaders.map(([label,g,fmt])=>g?`<div class="labrow"><span>${label}<div class="labmuted">${esc(g.name)} · ${esc(g.type)} · ${g.m.nR} trades en R</div></span><b>${fmt(g)}</b></div>`:"").join("")}<p class="labmuted">Chaque indicateur désigne un gagnant différent possible : ils ne mesurent pas la même chose.</p></div>`:""}<div class="card"><h2>Lecture rapide</h2><ul class="cl">${m.nR<20?`<li>Échantillon global inférieur à 20 trades avec R exploitable : interpréter les résultats avec prudence.</li>`:""}${m.pf!=null&&m.pf<1?"<li>Le Profit Factor est inférieur à 1 : les pertes brutes dépassent les gains bruts.</li>":""}${m.win!=null&&m.win>=60&&m.exp!=null&&m.exp<=0?"<li>Le taux de réussite est élevé mais l'espérance est nulle ou négative : le gain moyen ne compense pas les pertes.</li>":""}${m.nR<m.n?"<li>Certains trades n'ont pas de risque exploitable : ils ne sont pas inclus dans les indicateurs exprimés en R.</li>":""}${!m.n?"<li>Ajoute des trades clôturés pour commencer l'analyse.</li>":""}<li>Ces résultats décrivent les données saisies ; ils ne démontrent pas une relation de cause à effet.</li></ul></div>`}
+function labConfigurations(ts){const keys=["asset","side","trend","tf","ctf","setup","stype","sess","bos","idm","liq","choch","zone","etype","plan","emo","err"];let h=`<div class="sh2"><div><h2>Configurations</h2><div class="sub">Critères individuels et combinaisons observées</div></div></div>`;keys.forEach(k=>{const g=labGroups(ts,k);if(g.length>1)h+=labTable("Par "+LAB_FIELDS[k],g)});const combos=labComboGroups(ts);h+=labTable("Combinaisons de confluences SMC observées",combos.map(g=>({...g,m:g.m})));h+=`<p class="labmuted">Le moteur ne génère pas toutes les combinaisons théoriques : il regroupe les confluences réellement présentes dans les trades. Aucune limite fixe de confluences n'est imposée.</p>`;return h}
+function labCompare(ts){const values=labGroups(ts,labCompareField).map(x=>x.name).filter(x=>x!=="Non renseigné");if(!labCompareA&&values.length)labCompareA=values[0];if(!labCompareB&&values.length>1)labCompareB=values[1];const confs=["BOS","IDM","Liquidité","CHoCH","Order Block","FVG","Discount","Premium","Structure","Zone respectée","Confirmation"];const confHtml=(side,selected)=>`<div class="card"><h2>Confluences requises · Groupe ${side}</h2><div class="chips">${confs.map(c=>`<button type="button" data-labconf="${side}" data-conf="${esc(c)}" aria-pressed="${selected.includes(c)}">${esc(c)}</button>`).join("")}</div></div>`;const selected=(side)=>side==="A"?labCompareConfA:labCompareConfB;const matches=(t,arr)=>!arr.length||arr.every(c=>labConfluences(t).includes(c));const a=ts.filter(t=>(labCompareConfA.length?matches(t,labCompareConfA):labVal(t,labCompareField)===labCompareA)),b=ts.filter(t=>(labCompareConfB.length?matches(t,labCompareConfB):labVal(t,labCompareField)===labCompareB)),ma=labMetrics(a),mb=labMetrics(b);const opts=values.map(v=>`<option value="${esc(v)}"${v===labCompareA?" selected":""}>${esc(v)}</option>`).join("");const optsB=values.map(v=>`<option value="${esc(v)}"${v===labCompareB?" selected":""}>${esc(v)}</option>`).join("");const labelA=labCompareConfA.length?labCompareConfA.join(" + "):labCompareA,labelB=labCompareConfB.length?labCompareConfB.join(" + "):labCompareB;return `<div class="sh2"><div><h2>Comparateur</h2><div class="sub">Comparaison manuelle de deux configurations</div></div></div><div class="card"><h2>Comparaison par critère</h2><label>Critère<select id="labCompareField">${Object.entries(LAB_FIELDS).map(([k,v])=>`<option value="${k}"${k===labCompareField?" selected":""}>${v}</option>`).join("")}</select></label><div class="labcompare"><label>Groupe A<select id="labCompareA">${opts}</select></label><label>Groupe B<select id="labCompareB">${optsB}</select></label></div><p class="labmuted">Exemples : Londres contre New York, M15 contre H1, Long contre Short.</p></div><div class="card"><h2>Comparaison SMC personnalisée</h2><p class="labmuted">Coche les confluences que chaque groupe doit contenir. Les groupes peuvent contenir autant de confluences que nécessaire.</p><div class="labmuted">Groupe A</div><div class="chips" style="margin:7px 0 12px">${confs.map(c=>`<button type="button" data-labconf="A" data-conf="${esc(c)}" aria-pressed="${labCompareConfA.includes(c)}">${esc(c)}</button>`).join("")}</div><div class="labmuted">Groupe B</div><div class="chips" style="margin-top:7px">${confs.map(c=>`<button type="button" data-labconf="B" data-conf="${esc(c)}" aria-pressed="${labCompareConfB.includes(c)}">${esc(c)}</button>`).join("")}</div><p class="labmuted">Si aucune confluence n'est cochée pour un groupe, le comparateur utilise la valeur du critère ci-dessus.</p></div><div class="labcompare"><div class="card"><h2>${esc(labelA||"Groupe A")}</h2><div class="mv">${ma.n} trades</div><div class="ms">Réussite : ${labPct(ma.win)}</div><div class="ms">Espérance : ${ma.exp==null?"—":fR(ma.exp)}</div><div class="ms">PF : ${labPF(ma.pf)}</div><div class="ms">Total : ${fR(ma.netR)}</div></div><div class="card"><h2>${esc(labelB||"Groupe B")}</h2><div class="mv">${mb.n} trades</div><div class="ms">Réussite : ${labPct(mb.win)}</div><div class="ms">Espérance : ${mb.exp==null?"—":fR(mb.exp)}</div><div class="ms">PF : ${labPF(mb.pf)}</div><div class="ms">Total : ${fR(mb.netR)}</div></div></div><div class="card"><h2>Écart d'espérance</h2><div class="mv ${cls((ma.exp??0)-(mb.exp??0))}">${ma.exp==null||mb.exp==null?"—":fR(ma.exp-mb.exp)}</div><div class="ms">A moins B. Un échantillon plus grand et des conditions comparables sont nécessaires pour interpréter l'écart.</div></div>`}
+function labRankView(ts){const all=labRankings(ts),main=all.filter(x=>x.m.nR>=20),small=all.filter(x=>x.m.nR<20);const row=g=>`<div class="labrow"><span><b>${esc(g.name)}</b><div class="labmuted">${esc(g.type)} · ${g.m.nR} trades en R · espérance ${g.m.exp==null?"—":fR(g.m.exp)} · PF ${labPF(g.m.pf)}</div></span><span class="labscore">${labFmt(g.score,1)}</span></div>`;return `<div class="sh2"><div><h2>Classements</h2><div class="sub">Score équilibré modifiable · minimum 20 trades avec R exploitable</div></div></div><div class="card"><h2>Pondérations du score</h2><div class="labweights">${[["expectancy","Espérance R"],["pf","Profit Factor"],["dd","Drawdown"],["regularity","Régularité"],["sample","Échantillon"]].map(([k,l])=>`<label>${l} (%)<input type="number" min="0" max="100" step="1" data-labweight="${k}" value="${labWeights[k]}"></label>`).join("")}</div><p class="labmuted" id="labWeightTotal">Total : ${Object.values(labWeights).reduce((a,b)=>a+b,0)} % (doit être 100 %)</p><button class="labbtn" id="labWeightSave">Appliquer les pondérations</button></div><div class="card"><h2>Meilleures configurations</h2>${main.length?main.slice(0,30).map(row).join(""):`<div class="labempty">Aucune configuration n'a encore atteint 20 trades.</div>`}</div><div class="card"><h2>Configurations les moins performantes</h2>${main.length?[...main].sort((a,b)=>a.score-b.score).slice(0,20).map(row).join(""):`<div class="labempty">Aucun classement disponible.</div>`}</div><div class="card"><h2>Échantillons inférieurs à 20 trades</h2>${small.length?small.slice(0,40).map(row).join(""):`<div class="labempty">Aucune configuration supplémentaire à afficher.</div>`}</div><p class="labmuted">Le score combine espérance, Profit Factor, drawdown, dispersion des résultats et taille de l'échantillon. Il sert uniquement à classer les données observées, pas à prévoir la rentabilité.</p>`}
+function labSnapshot(ts){const m=labMetrics(ts);return{date:new Date().toISOString(),n:m.n,win:m.win,exp:m.exp,pf:m.pf===Infinity?"Infinity":m.pf,netR:m.netR,dd:m.dd,rank:labRankings(ts).slice(0,10).map(x=>({name:x.name,type:x.type,n:x.m.n,score:x.score,exp:x.m.exp,pf:x.m.pf===Infinity?"Infinity":x.m.pf}))}}
+function labSave(kind){const name=prompt("Nom de cette analyse :",kind==="dynamic"?"Analyse dynamique":"Instantané");if(!name||!name.trim())return;const ts=labBaseTrades(),item={id:Date.now(),name:name.trim(),kind,filters:{period:labPeriod,from:labFrom,to:labTo,field:labField,value:labValue,criteria:{...labFilterValues},account:acc},created:new Date().toISOString()};if(kind==="frozen")item.snapshot=labSnapshot(ts);labSaved.unshift(item);try{kvs.setItem("tjLabSaved",JSON.stringify(labSaved));toast("Analyse sauvegardée.");render()}catch(e){toast("Mémoire locale insuffisante pour sauvegarder cette analyse.")}}
+function labSavedView(){const rows=labSaved.map(x=>{const d=new Date(x.created).toLocaleDateString("fr-FR");return `<div class="labrow"><span><b>${esc(x.name)}</b><div class="labmuted">${x.kind==="dynamic"?"Dynamique · critères recalculés":"Instantané figé · "+(x.snapshot?.n??0)+" trades"} · ${d}</div></span><span style="display:flex;gap:5px"><button class="labbtn" data-labload="${x.id}">Ouvrir</button><button class="labbtn" data-labdel="${x.id}">✕</button></span></div>`}).join("");return `<div class="sh2"><div><h2>Analyses sauvegardées</h2><div class="sub">Critères dynamiques et instantanés figés</div></div></div><div class="labactions"><button class="labbtn" id="labSaveDynamic">Sauvegarder les critères</button><button class="labbtn" id="labSaveFrozen">Figer les résultats</button></div><div class="card"><h2>Mes analyses</h2>${rows||`<div class="labempty">Aucune analyse sauvegardée.</div>`}</div><div id="labSavedDetail"></div>`}
+function labFiltersHTML(){const fields=Object.keys(LAB_FIELDS);return `<div class="labfilters"><label>Période<select id="labPeriod"><option value="all"${labPeriod==="all"?" selected":""}>Toutes les dates</option><option value="7"${labPeriod==="7"?" selected":""}>7 derniers jours</option><option value="30"${labPeriod==="30"?" selected":""}>30 derniers jours</option><option value="90"${labPeriod==="90"?" selected":""}>3 derniers mois</option><option value="365"${labPeriod==="365"?" selected":""}>12 derniers mois</option><option value="custom"${labPeriod==="custom"?" selected":""}>Dates personnalisées</option></select></label>${labPeriod==="custom"?`<div class="g2"><label>Du<input id="labFrom" type="date" value="${labFrom}"></label><label>Au<input id="labTo" type="date" value="${labTo}"></label></div>`:""}<details style="margin-top:10px"><summary>Filtres avancés${Object.values(labFilterValues).filter(Boolean).length?" · "+Object.values(labFilterValues).filter(Boolean).length+" actifs":""}</summary><div class="g2">${fields.map(k=>{const values=[...new Set(vt().map(t=>labVal(t,k)))].sort();return `<label>${LAB_FIELDS[k]}<select data-labfilter="${k}"><option value="">Toutes les valeurs</option>${values.map(v=>`<option value="${esc(v)}"${labFilterValues[k]===v?" selected":""}>${esc(v)}</option>`).join("")}</select></label>`}).join("")}</div><button class="labbtn" id="labClearFilters" style="margin-top:9px">Effacer les filtres</button></details></div>`}
+function statsDonut(title,parts,center,caption,note=""){
+  const total=parts.reduce((a,x)=>a+Math.max(0,x.value),0);
+  let cursor=0;const stops=parts.map(x=>{const from=cursor;cursor+=total?Math.max(0,x.value)/total*100:0;return `${x.color} ${from.toFixed(2)}% ${cursor.toFixed(2)}%`}).join(", ");
+  const bg=total?`conic-gradient(${stops})`:`conic-gradient(var(--line) 0% 100%)`;
+  return `<div class="stats-card"><h3>${title}</h3>${note?`<div class="stats-note">${note}</div>`:""}<div class="stats-ring-row"><div class="stats-donut" style="background:${bg}"><div class="stats-donut-center">${center}<small>${caption}</small></div></div><div class="stats-legend">${parts.map(x=>`<div class="stats-legend-row"><span class="stats-legend-label"><i class="stats-dot" style="background:${x.color}"></i>${esc(x.label)}</span><b>${total?Math.round(x.value/total*100):0}%</b></div>`).join("")}</div></div></div>`;
+}
+function statsRing(p,col,lab){const C=213.6,o=C*(1-Math.max(0,Math.min(100,p))/100);return `<div class="hk"><div class="rg"><svg viewBox="0 0 84 84"><circle class="bg" cx="42" cy="42" r="34"/><circle class="fg" cx="42" cy="42" r="34" style="--c:${C};--o:${o.toFixed(1)};stroke:${col}"/></svg><b data-count="${Math.round(p)}" data-suf=" %">${Math.round(p)} %</b></div><small>${lab}</small></div>`}
+function statsHero(s){
+  const w=s.win??0,pl=s.plan??0,ex=s.ex;
+  const cw=w>=55?"#22C55E":w>=45?"#F59E0B":"#F87171",cp=pl>=80?"#22C55E":pl>=60?"#F59E0B":"#F87171";
+  const xv=ex==null?`<div class="xv">–</div>`:`<div class="xv" style="color:${ex>0?"#22C55E":ex<0?"#F87171":"var(--ink)"}"><span data-count="${ex.toFixed(2)}" data-dec="2" data-suf=" R" data-sign="1">${fR(ex)}</span></div>`;
+  return `<div class="hero">${statsRing(w,cw,"Réussite")}${statsRing(pl,cp,"Respect du plan")}<div class="hk">${xv}<small>Espérance / trade</small></div></div>`;
+}
+function impactBars(bars){
+  const pos=bars.filter(x=>x.v>0).sort((a,b)=>b.v-a.v).slice(0,4),neg=bars.filter(x=>x.v<0).sort((a,b)=>a.v-b.v).slice(0,4).sort((a,b)=>b.v-a.v);
+  const l=[...pos,...neg];if(!l.length)return"";
+  const mx=Math.max(...l.map(x=>Math.abs(x.v)),.5);
+  return `<div class="lb2" style="margin:4px 0 0">Impact sur mon résultat (R moyen par trade)</div>`+l.map((x,i)=>`<div class="ibl"><span>${esc(x.l)}<small>${x.n} trades</small></span><b class="${x.v>0?"gp":"gn"}">${fR(x.v)}</b></div><div class="ibt"><i class="ibz"></i><i class="ibb ${x.v>0?"p":"n"}" style="width:${Math.max(3,Math.abs(x.v)/mx*50).toFixed(1)}%;animation-delay:${i*90}ms"></i></div>`).join("");
+}
+function animCounts(){
+  const reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+  document.querySelectorAll("#view [data-count]").forEach(el=>{
+    const to=Number(el.dataset.count),d=Number(el.dataset.dec||0),suf=el.dataset.suf||"",sg=el.dataset.sign==="1";
+    const fmt=v=>(sg&&v>0?"+":"")+v.toLocaleString("fr-FR",{minimumFractionDigits:d,maximumFractionDigits:d})+suf;
+    if(reduce){el.textContent=fmt(to);return}
+    const t0=performance.now();
+    (function f(n){const p=Math.min(1,(n-t0)/900);el.textContent=fmt(to*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(f)})(t0);
+  });
+}
+function autoInsightsCard(ts){
+  const MIN=5,avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
+  const stat=g=>{const r=g.map(rOf).filter(x=>x!=null);return{n:g.length,avg:avg(r),sum:r.reduce((x,y)=>x+y,0),win:g.length?Math.round(g.filter(t=>t.res>0).length/g.length*100):0}};
+  const strong=[],weak=[],info=[],bars=[];
+  [["sess","Session"],["stype","Type de setup"],["etype","Type d’entrée"],["bos","BOS"],["zone","Zone"],["idm","IDM"],["ctf","Confirmation"],["trend","Tendance"],["tf","Unité de temps"],["emo","État émotionnel"],["side","Direction"],["asset","Actif"]].forEach(([k,lab])=>{
+    const m=new Map();ts.forEach(t=>{const v=String(t[k]||"").trim();if(v)m.set(v,[...(m.get(v)||[]),t])});
+    const gs=[...m.entries()].map(([name,g])=>({name,...stat(g)})).filter(x=>x.n>=MIN&&x.avg!==null).sort((a,b)=>b.avg-a.avg);
+    if(gs.length<2)return;
+    const b=gs[0],w=gs[gs.length-1];
+    bars.push({l:`${lab} · ${b.name}`,v:b.avg,n:b.n},{l:`${lab} · ${w.name}`,v:w.avg,n:w.n});
+    if(b.avg-w.avg<.3)return;
+    if(b.avg>0)strong.push({v:b.avg,t:`${lab} « ${b.name} » : ${fR(b.avg)} en moyenne, ${b.win} % de réussite (${b.n} trades).`});
+    if(w.avg<0)weak.push({v:w.avg,t:`${lab} « ${w.name} » : ${fR(w.avg)} en moyenne, ${w.win} % de réussite (${w.n} trades). À réduire ou à revoir.`});
+  });
+  const em=new Map();ts.forEach(t=>{const e=String(t.err||"").trim();if(e&&e!=="Aucune")em.set(e,[...(em.get(e)||[]),t])});
+  [...em.entries()].map(([name,g])=>({name,...stat(g)})).filter(x=>x.n>=3&&x.sum<0).sort((a,b)=>a.sum-b.sum).slice(0,2).forEach(x=>weak.push({v:x.sum,t:`Erreur « ${x.name} » : ${x.n} trades, ${fR(x.sum)} cumulé. À corriger en priorité.`}));
+  const inP=stat(ts.filter(t=>t.plan!==false)),outP=stat(ts.filter(t=>t.plan===false));
+  if(inP.n>=3&&outP.n>=3&&inP.avg!==null&&outP.avg!==null){bars.push({l:"Dans le plan",v:inP.avg,n:inP.n},{l:"Hors plan",v:outP.avg,n:outP.n});(outP.avg<inP.avg?weak:info).push({v:outP.avg-inP.avg,t:`Dans le plan : ${fR(inP.avg)} en moyenne (${inP.n} trades) contre ${fR(outP.avg)} hors plan (${outP.n}).`})}
+  const rk=ts.map(t=>Number(t.risk)).filter(x=>x>0);
+  if(rk.length>=MIN&&Math.max(...rk)/Math.min(...rk)>=2)weak.push({v:-.1,t:`Risque irrégulier : de ${Math.min(...rk)} $ à ${Math.max(...rk)} $ par trade. Un risque constant rend tes statistiques plus fiables.`});
+  const seq=[...ts].sort(cmp),aft=[],oth=[];seq.forEach((t,i)=>{(i>0&&seq[i-1].res<0?aft:oth).push(t)});
+  const sa=stat(aft),so=stat(oth);
+  if(sa.n>=MIN&&so.n>=MIN&&sa.avg!==null&&so.avg!==null&&so.avg-sa.avg>=.3)weak.push({v:sa.avg-so.avg,t:`Après une perte : ${fR(sa.avg)} en moyenne (${sa.n} trades) contre ${fR(so.avg)} sinon. Prévois une pause après une perte.`});
+  const bd=new Map();ts.forEach(t=>{if(t.date)bd.set(t.date,[...(bd.get(t.date)||[]),t])});
+  const busy=[],calm=[];bd.forEach(g=>(g.length>=3?busy:calm).push(...g));
+  const sb=stat(busy),sc=stat(calm);
+  if(sb.n>=MIN&&sc.n>=MIN&&sb.avg!==null&&sc.avg!==null&&sc.avg-sb.avg>=.3)weak.push({v:sb.avg-sc.avg,t:`Jours à 3 trades ou plus : ${fR(sb.avg)} par trade contre ${fR(sc.avg)} les autres jours. Limite le nombre de trades par jour.`});
+  strong.sort((a,b)=>b.v-a.v);weak.sort((a,b)=>a.v-b.v);
+  const li=(x,c,s,i)=>`<div class="stats-list-item" style="border-left:3px solid ${c};animation:rise .45s ease both;animation-delay:${i*70}ms"><span>${esc(x.t)}</span><b style="color:${c}">${s}</b></div>`;
+  const sec=(h,arr,c,s)=>arr.length?`<div class="lb2" style="margin:14px 0 6px"><span style="color:${c}">●</span> ${h}</div><div class="stats-list">${arr.slice(0,4).map((x,i)=>li(x,c,s,i)).join("")}</div>`:"";
+  let body;
+  if(ts.length<MIN)body=`<div class="labempty">Il faut au moins ${MIN} trades clôturés pour lancer l’analyse (${ts.length} pour l’instant).</div>`;
+  else if(!strong.length&&!weak.length&&!info.length)body=`<div class="labempty">Rien de net pour l’instant : aucune différence marquée entre tes critères (groupes de ${MIN} trades minimum).</div>`;
+  else body=sec("Points forts",strong,"var(--gain)","▲")+sec("Points à améliorer",weak,"var(--loss)","▼")+sec("À noter",info,"var(--mute)","•");
+  const warn=ts.length<30?`Échantillon de ${ts.length} trade${ts.length>1?"s":""} : constats indicatifs. Vise une trentaine de trades avant de changer ta stratégie.`:"Moyennes calculées en R (résultat ÷ risque).";
+  return `<div class="stats-card wide"><h3>Analyse automatique selon mes critères</h3>${impactBars(bars)}${body}<div class="stats-note" style="margin-top:10px">${warn} Seuls les groupes de ${MIN} trades ou plus sont comparés.</div></div>`;
+}
+function analyseView(){
+  const ts=vt().filter(t=>t&&t.res!==null&&t.res!==undefined&&t.res!==""&&Number.isFinite(Number(t.res))).sort(cmp);
+  const head=`<div class="sh2"><div><h2>Mon analyse</h2><div class="sub">Lecture automatique de tes trades clôturés</div></div></div>`;
+  if(!ts.length)return head+`<div class="empty">Aucun trade clôturé pour l’instant.<br>Ajoute tes résultats pour lancer l’analyse automatique.</div>`;
+  return head+statsHero(stats(ts))+autoInsightsCard(ts);
+}
+function labExport(){const ts=labBaseTrades(),q=v=>'"'+String(v??"").replace(/"/g,'""')+'"';const headers=["Date","Compte","Type de compte","Actif","Direction","Tendance","Timeframe","Type setup","Session","BOS","Zone","Confluences setup","IDM","Liquidité","CHoCH","Type entrée","Risque","Résultat","R","Plan","Émotion","Erreur","Checklist"];const rows=ts.map(t=>[t.date,an(t.acc),((accounts.find(a=>a.id===t.acc)||{}).type||"Personnel"),t.asset,t.side,t.trend,t.tf,t.stype,t.sess,t.bos,t.zone,(Array.isArray(t.confluences)?t.confluences:[t.confluences].filter(Boolean)).join(" + "),t.idm,t.liq,t.choch,t.etype,t.risk,t.res,rOf(t),t.plan?"Oui":"Non",t.emo,t.err,(t.conf||[]).join(" + ")]);const blob=new Blob(["\uFEFF"+[headers,...rows].map(r=>r.map(q).join(";")).join("\n")],{type:"text/csv;charset=utf-8"});const u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download="laboratoire-analyse.csv";a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+function labHandleClick(b){if(b.dataset.labconf){const arr=b.dataset.labconf==="A"?labCompareConfA:labCompareConfB;const c=b.dataset.conf;const i=arr.indexOf(c);if(i>=0)arr.splice(i,1);else arr.push(c);render();return true}if(b.dataset.labtab){labTab=b.dataset.labtab;render();return true}if(b.id==="labExport"){labExport();return true}if(b.id==="labPrint"){window.print();return true}if(b.id==="labSaveDynamic"){labSave("dynamic");return true}if(b.id==="labSaveFrozen"){labSave("frozen");return true}if(b.id==="labClearFilters"){labField="";labValue="";labFilterValues={};render();return true}if(b.id==="labWeightSave"){const vals={};document.querySelectorAll("[data-labweight]").forEach(i=>vals[i.dataset.labweight]=Number(i.value));if(Object.values(vals).some(v=>!Number.isFinite(v)||v<0)||Object.values(vals).reduce((a,b)=>a+b,0)!==100){toast("Les pondérations doivent totaliser exactement 100 %.");return true}labWeights=vals;try{kvs.setItem("tjLabWeights",JSON.stringify(labWeights))}catch(e){}render();toast("Pondérations appliquées.");return true}if(b.dataset.labdel){labSaved=labSaved.filter(x=>String(x.id)!==b.dataset.labdel);kvs.setItem("tjLabSaved",JSON.stringify(labSaved));render();return true}if(b.dataset.labload){const x=labSaved.find(x=>String(x.id)===b.dataset.labload);if(!x)return true;if(x.kind==="dynamic"){labPeriod=x.filters.period;labFrom=x.filters.from||"";labTo=x.filters.to||"";labField=x.filters.field||"";labValue=x.filters.value||"";labFilterValues={...(x.filters.criteria||{})};if(x.filters.account==="all")acc="all";else if(x.filters.account&&accounts.some(a=>a.id===x.filters.account))acc=x.filters.account;labTab="overview";render()}else{const d=document.getElementById("labSavedDetail");if(d){const z=x.snapshot||{};d.innerHTML=`<div class="card"><h2>Instantané : ${esc(x.name)}</h2><div class="labmuted">Enregistré le ${new Date(x.created).toLocaleString("fr-FR")} · ${z.n||0} trades</div><div class="cards">${labCard("Réussite",labPct(z.win))}${labCard("Espérance",z.exp==null?"—":fR(z.exp))}${labCard("Profit factor",z.pf==="Infinity"?"∞":labPF(z.pf))}${labCard("Total R",fR(z.netR))}</div>${(z.rank||[]).map(g=>`<div class="labrow"><span>${esc(g.name)}<div class="labmuted">${esc(g.type)} · ${g.n} trades</div></span><b class="labscore">${labFmt(g.score,1)}/100</b></div>`).join("")}</div>`}}return true}return false}
+function reviewCard(){
+  const li=a=>a.map(x=>`<li>${esc(x)}</li>`).join(""),q=["Ai-je identifié le time frame directeur ?","La structure était-elle claire ?","Le BOS était-il confirmé avant le setup ?","Ai-je attendu la prise de liquidité ?","Mon entrée était-elle dans ma zone d’action ?","Ai-je évité les entrées par impatience ?","Quelle erreur dois-je éliminer cette semaine ?"];
+  return `<div class="card"><h2>Questions de revue hebdomadaire · ${wk()}</h2><ol class="cl">${li(q)}</ol><textarea id="wk" rows="5" style="width:100%;margin-top:10px" placeholder="Mes réponses et mes conclusions de la semaine">${esc(weekly[wk()]||"")}</textarea><button class="lnk" id="wks" style="margin-top:8px">${ic("check")}Enregistrer la revue</button></div>`;
+}
+function openDetail(t){
+  if(!t)return;cur=t;
+  const general=[["Compte",an(t.acc)],["Date",day(t.date)],["Actif",t.asset],["Direction",t.side],["Structure du marché",t.trend],["Timeframe principal",t.tf],["Session",t.sess]];
+  const setup=[["Setup enregistré",t.setup],["Type de setup",t.stype],["Zone d’action",t.zone],["Confluences du setup",(Array.isArray(t.confluences)?t.confluences:[t.confluences].filter(Boolean)).join(", ")]];
+  const confirmation=[["Confirmation d’entrée",t.etype],["Timeframe de confirmation",t.ctf],["Break of Structure (BOS)",t.bos],["Prise de liquidité",t.liq],["CHoCH",t.choch],["IDM",t.idm]];
+  const management=[["Risque",t.risk!=null?fE(t.risk).replace("+",""):""],["Résultat",fE(t.res)],["Résultat en R",rOf(t)!=null?fR(rOf(t)):""],["Émotion",t.emo],["Erreur",t.err],["Plan respecté",t.plan?"Oui":"Non"]];
+  const rows=a=>a.filter(x=>x[1]!==undefined&&x[1]!==null&&x[1]!=="").map(x=>`<span>${x[0]}</span><b>${esc(x[1])}</b>`).join("");
+  const r=rOf(t),sh=(t.shots||[]).map((u,i)=>`<img src="${esc(u)}" data-i="${i}" alt="Capture ${i+1}" loading="lazy">`).join(""),cf=t.conf||[];
+  $("#dtt").innerHTML=`${esc(t.asset)} <span class="${cls(t.res)}">${fE(t.res)}${r!=null?" · "+fR(r):""}</span>`;
+  $("#dtb").innerHTML=`<div class="sec"><h3>Informations générales</h3><div class="kv">${rows(general)}</div></div>`
+   +`<div class="sec"><h3>Setup et contexte d’analyse</h3><div class="kv">${rows(setup)||`<span>Aucune information de setup renseignée</span>`}</div>${t.det?`<div class="txt">${esc(t.det)}</div>`:""}</div>`
+   +`<div class="sec"><h3>Confirmation d’entrée</h3><div class="kv">${rows(confirmation)||`<span>Aucune confirmation renseignée</span>`}</div>${cf.length?`<div class="ck">${CONF.map(c=>`<span>${cf.includes(c)?"☑":"☐"} ${esc(c)}</span>`).join("")}</div>`:""}</div>`
+   +`<div class="sec"><h3>Gestion et résultat du trade</h3><div class="kv">${rows(management)}</div>${t.note?`<div class="txt">${esc(t.note)}</div>`:""}</div>`
+   +(sh?`<div class="sec"><h3>Capture(s) d’écran du trade</h3><p class="ft">Appuie sur une image pour l’agrandir.</p><div class="th">${sh}</div></div>`:`<div class="sec"><h3>Capture d’écran</h3><p class="ft">Aucune capture n’a été enregistrée pour ce trade.</p></div>`);
+  $("#dt").hidden=false;
+}
+/* Formulaire */
+function amt(){
+  if(form.out==="n")return 0;
+  const a=num($("#f-res").value);
+  return a==null?null:form.out==="p"?-Math.abs(a):Math.abs(a);
+}
+function calcPv(){
+  const e=amt(),k=num($("#f-risk").value);
+  $("#f-res").disabled=form.out==="n";
+  $("#pv").innerHTML=e==null?"Choisis l’issue du trade, puis saisis le montant.":`Résultat : <b class="${cls(e)}">${fE(e)}${k>0?" ("+fR(e/k)+")":""}</b>`;
+  return e;
+}
+const ASSETS={"Forex":["EUR/USD","GBP/USD","USD/JPY","USD/CHF","AUD/USD","USD/CAD","NZD/USD","EUR/GBP","EUR/JPY","GBP/JPY"],"Matières premières":["XAU/USD (Or)","XAG/USD (Argent)","Pétrole WTI","Pétrole Brent","Gaz naturel"]};
+function buildAssets(v){
+  const all=Object.values(ASSETS).flat(),ex=v&&!all.includes(v)?`<optgroup label="Autre"><option>${esc(v)}</option></optgroup>`:"";
+  $("#f-asset").innerHTML=`<option value="">Choisir un actif</option>`+Object.entries(ASSETS).map(([g,l])=>`<optgroup label="${g}">${l.map(a=>`<option>${esc(a)}</option>`).join("")}</optgroup>`).join("")+ex;
+  $("#f-asset").value=v||"";
+}
+const sel=(id,l)=>{$("#"+id).innerHTML=`<option value="">Choisir…</option>`+l.map(v=>`<option>${esc(v)}</option>`).join("")};
+const chips=(id,l)=>{$("#"+id).innerHTML=l.map(v=>`<button type="button" data-v="${esc(v)}">${esc(v)}</button>`).join("")};
+function press(){
+  const P=(id,fn)=>document.querySelectorAll("#"+id+" button").forEach(b=>b.setAttribute("aria-pressed",String(fn(b.dataset.v))));
+  P("g-side",v=>v===form.side);P("g-trend",v=>v===form.trend);P("g-tf",v=>v===form.tf);P("g-conf",v=>form.conf.includes(v));
+  P("g-out",v=>v===form.out);P("g-plan",v=>(v==="1")===form.plan);P("g-emo",v=>v===form.emo);
+  document.querySelectorAll("#sh [data-k]").forEach(c=>{c.value=form[c.dataset.k]||""});
+}
+function updateEntryFields(){document.querySelectorAll("#sh .entry-extra").forEach(e=>e.hidden=form.etype==="Agressive");}
+const toUrl=b=>new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.readAsDataURL(b)});
+function shrink(f,max,q){return new Promise((ok,no)=>{toUrl(f).then(u=>{const im=new Image();im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);c.toBlob(b=>b?ok(b):no(),"image/jpeg",q)};im.onerror=no;im.src=u},no)})}
+function renderShots(){
+  const ok=assets||!ref;
+  $("#fl").style.display=ok?"":"none";
+  $("#th").innerHTML=form.shots.map((u,i)=>`<div><img src="${esc(u)}" data-i="${i}" alt="Capture ${i+1}"><button type="button" class="rm2" data-rm="${i}" aria-label="Retirer la capture">✕</button></div>`).join("")+(ok?"":`<p class="ft">Les captures ne sont pas disponibles dans ce mode.</p>`);
+}
+async function addShots(files){
+  for(const f of files){
+    try{const b=await shrink(f,assets?1400:700,assets?.8:.6);form.shots.push(assets?(await assets.upload(b)).url:await toUrl(b))}
+    catch(e){toast("Capture non ajoutée.")}
+  }
+  renderShots();
+}
+function openSheet(t){
+  cur=t||null;delArm=false;$("#del").textContent="Supprimer";
+  const last=[...trades].sort(cmp).pop();
+  $("#st").textContent=t?"Modifier le trade":"Nouveau trade";
+  $("#f-acc").innerHTML=accounts.map(a=>`<option value="${esc(a.id)}">${esc(a.name)}</option>`).join("");$("#f-acc").value=t?.acc||(acc!=="all"?acc:last?.acc||accounts[0].id);
+  $("#f-date").value=t?t.date:today();buildAssets(t?t.asset:"");$("#f-det").value=t?.det||"";
+  $("#f-risk").value=t?t.risk??"":(last?.risk??"");$("#f-res").value=t&&t.res?Math.abs(t.res):"";$("#f-note").value=t?.note||"";
+  form={side:t?.side||"Long",trend:t?.trend||"",tf:t?.tf||"",confluences:(Array.isArray(t?.confluences)?t.confluences:[t?.confluences].filter(Boolean)).slice(0,1),conf:[...(t?.conf||[])],shots:[...(t?.shots||[])],out:t?(t.res>0?"g":t.res<0?"p":"n"):"g",plan:t?t.plan:true,emo:t?.emo||""};
+  K.forEach(k=>form[k]=t?.[k]||"");if(form.etype==="Confirmée")form.etype="Confirmé";
+  chips("g-conf",CONF);sel("g-confluences",["Order Block","FVG","Breaker Block","Golden Zone","Aucune"],"Choisir une confluence");$("#g-confluences").value=form.confluences[0]||"";Object.entries({...LISTS,tf:TFS,emo:EMO}).forEach(([k,l])=>sel("g-"+k,l));press();updateEntryFields();renderShots();
+  const u=k=>[...new Set(trades.map(x=>x[k]).filter(Boolean))].map(v=>`<option value="${esc(v)}">`).join("");
+  $("#dl-s").innerHTML=u("setup");
+  $("#del").hidden=!t;calcPv();$("#sh").hidden=false;
+}
+const closeSheet=()=>{$("#sh").hidden=true};
+function saveTrade(){
+  const asset=$("#f-asset").value,risk=num($("#f-risk").value),eu=calcPv();
+  if(!asset){toast("Choisis l’actif.");$("#f-asset").focus();return}
+  if(eu==null){toast("Indique le montant du résultat.");$("#f-res").focus();return}
+  const t={id:cur?cur.id:Date.now(),acc:$("#f-acc").value,date:$("#f-date").value||today(),asset,side:form.side,trend:form.trend,tf:form.tf,setup:cur?.setup||"",confluences:form.confluences.slice(0,1),
+    conf:form.conf,...Object.fromEntries(K.map(k=>[k,form[k]])),det:$("#f-det").value.trim(),shots:form.shots,risk,res:eu,plan:form.plan,emo:form.emo,note:$("#f-note").value.trim()};
+  trades=cur?trades.map(x=>x.id===cur.id?t:x):[...trades,t];
+  if(acc!=="all")acc=t.acc;save();closeSheet();render();toast("Trade enregistré.");
+}
+function printReport(){
+  const s=stats(trades),a=[...trades].sort(cmp),c=n=>n>0?"g":n<0?"l":"",d=x=>x.split("-").reverse().join("/");
+  const hd=["Date","Actif","Sens","Setup","Entrée","Stop","Sortie","Risque","Résultat","R","Plan","Émotion"].map(h=>`<th>${h}</th>`).join("");
+  const body=a.map(t=>{const r=rOf(t);return `<tr><td>${d(t.date)}</td><td>${esc(t.asset)}</td><td>${t.side}</td><td>${esc(t.setup)}</td><td>${t.entry??""}</td><td>${t.stop??""}</td><td>${t.exit??""}</td><td>${t.risk!=null?fE(t.risk).replace(/^\+/,""):""}</td><td class="${c(t.res)}">${fE(t.res)}</td><td class="${c(r)}">${fR(r)}</td><td>${t.plan?"Oui":"Non"}</td><td>${esc(t.emo)}</td></tr>`}).join("");
+  $("#pr").innerHTML=`<h1>Journal de trading</h1><p>Édité le ${new Date().toLocaleDateString("fr-FR")}. ${s.n} trades, <b>${fR(s.sumR)}</b> (${fE(s.eur)}), réussite ${s.win==null?"–":Math.round(s.win)+" %"}, plan respecté ${s.plan==null?"–":Math.round(s.plan)+" %"}.</p><table><tr>${hd}</tr>${body}</table>`;
+  try{window.print()}catch(e){toast("Impression impossible ici. Utilise « Copier mes données ».")}
+}
+function backupStorage(){
+  const out={};
+  for(let i=0;i<kvs.length;i++){
+    const k=kvs.key(i);
+    if(k&&k.startsWith("tj"))out[k]=kvs.getItem(k);
+  }
+  return out;
+}
+function downloadJson(data,name){
+  const blob=new Blob([JSON.stringify(data)],{type:"application/json;charset=utf-8"});
+  const url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+async function makeFullBackup(auto=false){
+  const backup={format:"journal-trading-backup",version:1,createdAt:new Date().toISOString(),appVersion:"10",data:{trades:JSON.parse(JSON.stringify(trades)),accounts:JSON.parse(JSON.stringify(accounts)),acc,weekly:JSON.parse(JSON.stringify(weekly)),storage:backupStorage()}};
+  // Les captures déjà stockées en data URI sont intégrées directement. Les URL d'images
+  // externes sont conservées telles quelles : leur serveur peut interdire leur copie locale.
+  const unresolved=[];
+  for(const t of backup.data.trades){
+    if(!Array.isArray(t.shots))continue;
+    for(let i=0;i<t.shots.length;i++){
+      const src=t.shots[i];
+      if(typeof src!=="string"||!/^https?:\/\//i.test(src))continue;
+      try{
+        const response=await fetch(src,{mode:"cors",credentials:"omit"});
+        if(!response.ok)throw new Error("image inaccessible");
+        const blob=await response.blob();
+        if(!blob.type.startsWith("image/"))throw new Error("format non image");
+        t.shots[i]=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(blob)});
+      }catch(e){unresolved.push({tradeId:t.id,asset:t.asset||"",index:i+1,url:src})}
+    }
+  }
+  if(unresolved.length)backup.externalImagesNotEmbedded=unresolved;
+  downloadJson(backup,`journal-trading-sauvegarde-${new Date().toISOString().slice(0,10)}.json`);
+  if(!auto){
+    const msg=unresolved.length?`Sauvegarde créée. ${unresolved.length} capture(s) distantes n’ont pas pu être intégrées au fichier ; leurs liens ont été conservés.`:"Sauvegarde complète créée avec les captures accessibles intégrées.";
+    const el=document.getElementById("backupMsg");if(el)el.textContent=msg;toast(unresolved.length?"Sauvegarde créée avec quelques liens externes.":"Sauvegarde complète créée.");
+  }
+  return backup;
+}
+function validBackup(b){
+  return !!b&&b.format==="journal-trading-backup"&&b.version===1&&b.data&&Array.isArray(b.data.trades)&&Array.isArray(b.data.accounts)&&b.data.trades.every(t=>t&&typeof t==="object"&&!Array.isArray(t))&&b.data.accounts.every(a=>a&&typeof a==="object"&&!Array.isArray(a))&&b.data.weekly&&typeof b.data.weekly==="object";
+}
+async function restoreBackupFile(file){
+  const msg=document.getElementById("backupMsg");
+  try{
+    if(!file) return;
+    const parsed=JSON.parse(await file.text());
+    if(!validBackup(parsed)){if(msg)msg.textContent="Fichier invalide ou incompatible. Aucune donnée n’a été modifiée.";return}
+    const d=parsed.data;
+    const imageCount=d.trades.reduce((n,t)=>n+(Array.isArray(t.shots)?t.shots.length:0),0);
+    const yes=confirm(`Cette sauvegarde contient ${d.trades.length} trade(s), ${d.accounts.length} compte(s) et ${imageCount} capture(s).\n\nLa restauration remplacera les données actuellement présentes. Une copie de sécurité sera téléchargée avant le remplacement. Continuer ?`);
+    if(!yes)return;
+    await makeFullBackup(true);
+    const previous={};for(let i=0;i<kvs.length;i++){const k=kvs.key(i);if(k&&k.startsWith("tj"))previous[k]=kvs.getItem(k)}
+    try{
+      Object.keys(previous).forEach(k=>kvs.removeItem(k));
+      const stored=d.storage&&typeof d.storage==="object"?d.storage:{};
+      Object.entries(stored).forEach(([k,v])=>{if(k.startsWith("tj")&&typeof v==="string")kvs.setItem(k,v)});
+      kvs.setItem("tj",JSON.stringify(d.trades));
+      kvs.setItem("tja",JSON.stringify(d.accounts));
+      kvs.setItem("tjw",JSON.stringify(d.weekly));
+      kvs.setItem("tjc",typeof d.acc==="string"?d.acc:"all");
+    }catch(storageError){
+      Object.keys(kvs).filter(k=>k.startsWith("tj")).forEach(k=>kvs.removeItem(k));
+      Object.entries(previous).forEach(([k,v])=>kvs.setItem(k,v));
+      throw storageError;
+    }
+    trades=d.trades;accounts=d.accounts;weekly=d.weekly;acc=typeof d.acc==="string"?d.acc:"all";
+    try{labSaved=JSON.parse(kvs.getItem("tjLabSaved")||"[]");if(!Array.isArray(labSaved))labSaved=[]}catch(e){labSaved=[]}
+    try{const w=JSON.parse(kvs.getItem("tjLabWeights")||"null");if(w)labWeights=w}catch(e){}
+    renderAcc();render();
+    if(msg)msg.textContent="Restauration terminée. Vérifie tes trades et tes captures.";
+    toast("Sauvegarde restaurée.");
+  }catch(e){if(msg)msg.textContent="Restauration impossible : "+(e&&e.message?e.message:"fichier ou stockage invalide")+". Les données précédentes ont été conservées si le stockage a refusé l’opération."}
+}
+function exportCsv(){
+  const q=v=>'"'+String(v??"").replace(/"/g,'""')+'"';
+  const h=["Compte","Type de compte","Date","Actif","Sens","Tendance","Time frame","Confluences setup","Checklist","Détails","Risque $","Résultat $","Résultat R","Plan respecté","Émotion","Notes","Captures","Session","Type de setup","BOS","Zone","IDM","Type d’entrée","TF confirmation","Liquidité","CHoCH","Erreur"];
+  const rows=[...trades].sort(cmp).map(t=>[an(t.acc),(accounts.find(a=>a.id===t.acc)||{}).type||"Personnel",t.date,t.asset,t.side,t.trend,t.tf,(Array.isArray(t.confluences)?t.confluences:[t.confluences].filter(Boolean)).join(" + "),(t.conf||[]).join(" + "),t.det,t.risk,t.res,rOf(t)==null?"":rOf(t).toFixed(2),t.plan?"Oui":"Non",t.emo,t.note,(t.shots||[]).length,...K.map(k=>t[k])].map(q).join(";"));
+  const txt=[h.map(q).join(";"),...rows].join("\n");
+  if(dl)return dl.save({filename:"journal-trading.csv",data:"\uFEFF"+txt}).catch(e=>{if(e&&e.code!=="declined")showCopy(txt)});
+  showCopy(txt);
+}
+function showCopy(txt){
+  $("#cp").innerHTML=`<textarea id="cpt" rows="6" readonly style="width:100%;margin-top:10px"></textarea><p class="ft">Sélectionne tout le texte, copie-le et colle-le dans une note ou un mail pour garder une sauvegarde.</p>`;
+  const t=$("#cpt");t.value=txt;t.focus();t.select();
+  try{navigator.clipboard.writeText(txt).then(()=>toast("Données copiées."),()=>{})}catch(e){}
+}
+document.addEventListener("click",e=>{
+  const g=e.target;
+  if(g.tagName==="IMG"&&g.dataset.i!=null){$("#lbi").src=g.src;$("#lbx").hidden=false;return}
+  if(g.closest("#lbx")){$("#lbx").hidden=true;return}
+  const b=g.closest("button");if(!b)return;
+  const v=b.dataset.v,P=id=>b.closest("#"+id);
+  if(labHandleClick(b))return;
+  if(b.dataset.month!=null){
+    journalMonth=Number(b.dataset.month);
+    journalMonthOpen=true;
+    const prefix=`${journalYear}-${String(journalMonth+1).padStart(2,"0")}`;
+    selectedJournalDate=vt().filter(t=>(t.date||"").startsWith(prefix)).sort(cmp)[0]?.date||`${prefix}-01`;
+    render();scrollTo(0,0);return;
+  }
+  if(b.hasAttribute("data-month-back")){journalMonthOpen=false;journalDayOpen=false;render();scrollTo(0,0);return}
+  if(b.hasAttribute("data-day-back")){journalDayOpen=false;render();scrollTo(0,0);return}
+  if(b.dataset.date){selectedJournalDate=b.dataset.date;journalDayOpen=true;render();scrollTo(0,0);return}
+  if(b.dataset.t){tab=b.dataset.t;render();scrollTo(0,0)}
+  else if(b.dataset.cv){sm=b.dataset.cv;render()}
+  else if(b.id==="add"||b.id==="add2"){if(ready)openSheet();else toast("Chargement en cours…")}
+  else if(b.classList.contains("row"))openDetail(trades.find(t=>t.id==b.dataset.id));
+  else if(b.id==="dtx")$("#dt").hidden=true;
+  else if(b.id==="dte"){$("#dt").hidden=true;openSheet(cur)}
+  else if(b.id==="wks"){weekly[wk()]=$("#wk").value;save();toast("Revue enregistrée.")}
+  else if(b.id==="accm"){delAcc="";renderAcc();$("#am").textContent="";$("#as").hidden=false}
+  else if(b.id==="ax")$("#as").hidden=true;
+  else if(b.id==="aadd")addAcc();
+  else if(b.dataset.delacc)delAccount(b.dataset.delacc);
+  else if(b.id==="x")closeSheet();
+  else if(b.id==="sv")saveTrade();
+  else if(b.id==="gdConnect"){gdConnectClick()}
+  else if(b.id==="gdSyncNow"){gdSync(true)}
+  else if(b.id==="gdVersions"){gdListVersions()}
+  else if(b.dataset.gdrest){gdRestoreVersion(b.dataset.gdrest)}
+  else if(b.id==="gdDisc"){gdDisconnect()}
+  else if(b.id==="fullBackup"){makeFullBackup();}
+  else if(b.id==="chooseRestore"){$("#restoreFile").click()}
+  else if(b.id==="csv")exportCsv();
+  else if(b.dataset.rm!=null){form.shots.splice(+b.dataset.rm,1);renderShots()}
+  else if(b.id==="del"){if(!delArm){delArm=true;b.textContent="Confirmer la suppression"}else{trades=trades.filter(t=>t.id!==cur.id);save();closeSheet();render();toast("Trade supprimé.")}}
+  else if(b.closest("[data-k]")){const k=b.closest("[data-k]").dataset.k;form[k]=form[k]===v?"":v;press()}
+  else if(P("g-side")){form.side=v;press()}
+  else if(P("g-trend")){form.trend=form.trend===v?"":v;press()}
+  else if(P("g-tf")){form.tf=form.tf===v?"":v;press()}
+  else if(P("g-conf")){const i=form.conf.indexOf(v);i<0?form.conf.push(v):form.conf.splice(i,1);press()}
+  
+  else if(P("g-out")){form.out=v;calcPv();press()}
+  else if(P("g-plan")){form.plan=v==="1";press()}
+  else if(P("g-emo")){form.emo=form.emo===v?"":v;press()}
+});
+["f-risk","f-res"].forEach(i=>$("#"+i).addEventListener("input",calcPv));
+$("#sh").addEventListener("change",e=>{const k=e.target.dataset&&e.target.dataset.k;if(k){form[k]=e.target.value;if(k==="etype")updateEntryFields()}if(e.target.id==="g-confluences")form.confluences=e.target.value?[e.target.value]:[];});
+document.addEventListener("change",e=>{const i=e.target.id;if(i==="journalYear"){journalDayOpen=false;journalYear=Number(e.target.value);const prefix=`${journalYear}-${String(journalMonth+1).padStart(2,"0")}`;selectedJournalDate=vt().filter(t=>t.date.startsWith(prefix)).sort(cmp)[0]?.date||`${prefix}-01`;render()}else if(i==="fr"||i==="fd"){if(i==="fr")FR=e.target.value;else FD=e.target.value;render()}});
+document.addEventListener("input",e=>{if(e.target.matches("[data-labweight]")){const total=[...document.querySelectorAll("[data-labweight]")].reduce((a,x)=>a+(Number(x.value)||0),0);const n=document.getElementById("labWeightTotal");if(n)n.textContent="Total : "+total+" % (doit être 100 %)"}});
+document.addEventListener("change",e=>{const i=e.target.id;if(i==="labPeriod"){labPeriod=e.target.value;labFrom="";labTo="";render()}else if(i==="labFrom"){labFrom=e.target.value;render()}else if(i==="labTo"){labTo=e.target.value;render()}else if(i==="labField"){labField=e.target.value;labValue="";render()}else if(i==="labValue"){labValue=e.target.value;render()}else if(e.target.matches("[data-labfilter]")){const k=e.target.dataset.labfilter;if(e.target.value)labFilterValues[k]=e.target.value;else delete labFilterValues[k];render()}else if(i==="labCompareField"){labCompareField=e.target.value;labCompareA="";labCompareB="";render()}else if(i==="labCompareA"){labCompareA=e.target.value;render()}else if(i==="labCompareB"){labCompareB=e.target.value;render()}});
+$("#f-shot").addEventListener("change",async e=>{await addShots([...e.target.files]);e.target.value=""});
+document.addEventListener("change",async e=>{if(e.target&&e.target.id==="restoreFile"){await restoreBackupFile(e.target.files&&e.target.files[0]);e.target.value=""}});
+$("#accSel").addEventListener("change",e=>{acc=e.target.value;try{kvs.setItem("tjc",acc)}catch(x){}render()});
+$("#as").addEventListener("click",e=>{if(e.target.id==="as")$("#as").hidden=true});
+$("#aadd").addEventListener("click",e=>{e.stopPropagation();$("#am").textContent="Ajout en cours…";try{addAcc()}catch(err){$("#am").textContent="Erreur : "+err.message}});
+$("#al").addEventListener("change",e=>{
+  const r=e.target.closest(".ar");if(!r)return;const a=accounts.find(x=>x.id===r.dataset.id);if(!a)return;
+  if(e.target.classList.contains("an2")){const v=e.target.value.trim();if(v)a.name=v;else e.target.value=a.name}else if(e.target.classList.contains("ac2"))a.capital=num(e.target.value);else if(e.target.classList.contains("at2"))a.type=e.target.value;
+  save();render();
+});
+$("#sh").addEventListener("click",e=>{if(e.target.id==="sh")closeSheet()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#sh").hidden)closeSheet()});
+/* ===== Sauvegarde automatique Google Drive ===== */
+const GD_URL="";    // Option : colle ici l’URL /exec de ton script Apps Script (sinon, saisis-la dans Paramètres)
+const GD_CODE="";   // Option : colle ici ton code secret (sinon, saisis-le dans Paramètres)
+const GD_DIR="Journal de trading";
+const GD_FILE="journal-trading-donnees.json";
+const GD_KEEP=30;
+let gdApplying=false,gdTok=null,gdTokExp=0,gdTc=null,gdCb=null,gdEcb=null,gdBusy=false,gdAgain=false,gdTimer=null,gdMsg="",gdState="off",gdLastVis=0,gdFolderId=null,gdVers=null,gdPersisted=null;
+const gdLS={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},del:k=>{try{localStorage.removeItem(k)}catch(e){}}};
+const gdUrl=()=>(GD_URL||gdLS.get("gd_url")||"").trim();
+const gdCode=()=>(GD_CODE||gdLS.get("gd_code")||"").trim();
+const gdOn=()=>gdLS.get("gd_on")==="1"&&!!gdUrl()&&!!gdCode();
+const gdTime=()=>new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+const gdDay=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+function gdBadge(){return gdOn()?" · Drive : "+({ok:"à jour",busy:"synchro…",auth:"à reconnecter",err:"erreur"}[gdState]||""):""}
+function gdStatus(state,msg){
+  gdState=state;gdMsg=msg||"";
+  const e=document.getElementById("gdStatus");if(e)e.textContent=gdMsg;
+  const md=document.getElementById("mode");if(md)md.textContent=md.textContent.replace(/ · Drive.*$/,"")+gdBadge();
+}
+// Toute modification des données du journal (clés « tj… ») déclenche une sauvegarde différée.
+kvOnChange=k=>{if(typeof k==="string"&&k.startsWith("tj")&&!gdApplying)gdMarkDirty()};
+function gdMarkDirty(){gdLS.set("gd_dirty","1");if(gdOn())gdSchedule()}
+function gdSizeChars(){let n=0;for(const k of Object.keys(kvs))n+=(kvs[k]||"").length;return n}
+function gdSchedule(){clearTimeout(gdTimer);gdTimer=setTimeout(()=>gdSync(false),gdSizeChars()>8e6?30000:2500)}
+function gdHasData(){try{return(JSON.parse(kvs.getItem("tj")||"[]")||[]).length>0||(JSON.parse(kvs.getItem("tjLabSaved")||"[]")||[]).length>0}catch(e){return false}}
+/* ----- Transport : Google Apps Script (remplace l'OAuth Google) ----- */
+async function gdToken(){return true}
+async function gdApi(action,extra){
+  let r;
+  try{r=await fetch(gdUrl(),{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({code:gdCode(),action,...(extra||{})})})}
+  catch(e){throw new Error("connexion impossible (internet, ou URL du script incorrecte)")}
+  let j;try{j=await r.json()}catch(e){throw new Error("réponse invalide : vérifie l’URL du script et l’accès « Tout le monde »")}
+  if(!j||!j.ok){if(j&&j.error==="auth")throw Object.assign(new Error("auth"),{auth:true});throw new Error((j&&j.error)||"erreur du script")}
+  return j;
+}
+async function gdFindNamed(){const j=await gdApi("meta");return j.exists?{id:"main",updated:Number(j.updated)||0}:null}
+// Une copie datée par jour (au plus toutes les 30 min) est faite côté script ; les 30 plus récentes sont conservées.
+async function gdUpload(payload,file,name,noDaily){
+  const day=gdDay(),due=!noDaily&&!(gdLS.get("gd_dday")===day&&Date.now()-Number(gdLS.get("gd_dt")||0)<30*60000);
+  await gdApi("put",{data:payload,day:due?day:""});
+  if(due){gdLS.set("gd_dday",day);gdLS.set("gd_dt",String(Date.now()))}
+}
+async function gdDownload(id){return(await gdApi(id==="main"?"get":"version",{name:id})).data}
+async function gdList(){return(await gdApi("list")).files||[]}
+async function gdDaily(){}
+function gdPayload(){const s=backupStorage();delete s.tjc;return{format:"journal-trading-drive",v:1,updated:Date.now(),storage:s}}
+function gdApply(p){
+  if(!p||p.format!=="journal-trading-drive"||!p.storage||typeof p.storage!=="object")throw new Error("Fichier Drive invalide : aucune donnée modifiée.");
+  let t;try{t=JSON.parse(p.storage.tj||"[]")}catch(e){t=null}
+  if(!Array.isArray(t))throw new Error("Fichier Drive invalide : aucune donnée modifiée.");
+  // Copie de sécurité locale avant remplacement (seulement si légère, pour ne pas saturer la mémoire)
+  try{const prev=JSON.stringify(backupStorage());if(prev.length<800000)gdLS.set("gd_prev",prev);else gdLS.del("gd_prev")}catch(e){}
+  gdApplying=true;
+  try{
+    Object.keys(kvs).filter(k=>k.startsWith("tj")&&k!=="tjc").forEach(k=>kvs.removeItem(k));
+    Object.entries(p.storage).forEach(([k,v])=>{if(k.startsWith("tj")&&k!=="tjc"&&typeof v==="string")kvs.setItem(k,v)});
+  }finally{gdApplying=false}
+  try{const x=JSON.parse(kvs.getItem("tj")||"[]");trades=Array.isArray(x)?x:[]}catch(e){trades=[]}
+  try{const x=JSON.parse(kvs.getItem("tja")||"[]");accounts=Array.isArray(x)?x:[]}catch(e){accounts=[]}
+  try{const x=JSON.parse(kvs.getItem("tjw")||"null");weekly=x||{}}catch(e){weekly={}}
+  if(!accounts.length)accounts=[{id:"a1",name:"Compte principal",capital:null}];
+  if(acc!=="all"&&!accounts.some(a=>a.id===acc))acc="all";
+  try{labSaved=JSON.parse(kvs.getItem("tjLabSaved")||"[]");if(!Array.isArray(labSaved))labSaved=[]}catch(e){labSaved=[]}
+  try{const w=JSON.parse(kvs.getItem("tjLabWeights")||"null");if(w)labWeights=w}catch(e){}
+  renderAcc();render();
+}
+function gdErr(e,manual){
+  if(e&&e.auth)gdStatus("auth","Code secret refusé : vérifie qu’il est identique dans le script et dans Paramètres (et redéploie le script si tu l’as modifié). Tes données restent gardées sur cet appareil.");
+  else gdStatus("err","Erreur : "+(e&&e.message?e.message:e)+" · Tes données restent gardées sur cet appareil.");
+}
+async function gdSync(manual){
+  if(!gdOn())return;
+  if(gdBusy){gdAgain=true;return}
+  gdBusy=true;gdStatus("busy","Synchronisation en cours…");
+  try{
+    await gdToken(manual);
+    const file=await gdFindNamed(GD_FILE);
+    const last=Number(gdLS.get("gd_last")||0);
+    const has=gdHasData();
+    const dirty=gdLS.get("gd_dirty")==="1"||(last===0&&has);
+    if(file&&file.updated>last){
+      let useRemote=!dirty;
+      if(dirty)useRemote=confirm("Les données de cet appareil et celles de Google Drive ont toutes deux changé.\n\nOK : garder la version Google Drive (remplace cet appareil)\nAnnuler : garder cet appareil (remplace Google Drive)");
+      if(useRemote){
+        gdApply(await gdDownload(file.id));
+        gdLS.set("gd_last",String(file.updated));gdLS.set("gd_dirty","0");
+        gdStatus("ok","Données chargées depuis Google Drive · "+gdTime());return;
+      }
+    }
+    if(dirty||(!file&&has)){
+      const p=gdPayload();await gdUpload(p,file,GD_FILE);
+      gdLS.set("gd_last",String(p.updated));gdLS.set("gd_dirty","0");
+      let extra="";
+      try{await gdDaily(p)}catch(e2){if(e2&&e2.auth)throw e2;extra=" (copie datée non faite : "+(e2&&e2.message?e2.message:e2)+")"}
+      gdStatus("ok","Sauvegardé sur Google Drive · "+gdTime()+extra);
+    }else gdStatus("ok",(file?"À jour":"Connecté, rien à sauvegarder pour l’instant")+" · "+gdTime());
+  }catch(e){gdErr(e,manual)}
+  finally{gdBusy=false;if(gdAgain){gdAgain=false;gdSchedule()}}
+}
+async function gdListVersions(){
+  if(gdBusy)return;gdBusy=true;gdStatus("busy","Lecture des versions datées…");
+  try{
+    await gdToken(true);
+    gdVers=(await gdList()).slice(0,GD_KEEP);
+    render();gdStatus("ok",gdVers.length?gdVers.length+" version(s) datée(s) disponible(s).":"Aucune version datée pour l’instant.");
+  }catch(e){gdErr(e,true)}finally{gdBusy=false}
+}
+async function gdRestoreVersion(id){
+  const v=(gdVers||[]).find(f=>f.id===id),lbl=v?v.name.replace(/^sauvegarde-|\.json$/g,""):"";
+  if(!confirm("Restaurer la version du "+lbl+" ?\n\nLes données actuelles de cet appareil et du fichier principal sur Drive seront remplacées."))return;
+  if(gdBusy)return;gdBusy=true;gdStatus("busy","Restauration en cours…");
+  try{
+    await gdToken(true);
+    const p=await gdDownload(id);
+    gdApply(p);
+    const file=await gdFindNamed(GD_FILE),np=gdPayload();
+    await gdUpload(np,file,GD_FILE,true);
+    gdLS.set("gd_last",String(np.updated));gdLS.set("gd_dirty","0");
+    gdStatus("ok","Version du "+lbl+" restaurée · "+gdTime());
+  }catch(e){gdErr(e,true)}finally{gdBusy=false}
+}
+// ----- Protection contre l'effacement par le navigateur -----
+let gdEst=null;
+const gdStandalone=()=>(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone===true;
+function gdMemChars(){let n=0;try{for(const k of Object.keys(kvs))n+=k.length+(kvs[k]||"").length}catch(e){}return n}
+function gdProtHtml(){
+  const l=[];
+  l.push("Stockage protégé du navigateur : "+(gdPersisted===true?"oui ✓":gdPersisted===false?"non (ajoute le journal à l’écran d’accueil)":"non vérifiable ici"));
+  if(kvBackend==="idb"){
+    l.push("Stockage du journal : base IndexedDB, grande capacité ✓");
+    if(gdEst&&gdEst.quota){const pct=Math.round(gdEst.usage/gdEst.quota*100);l.push("Espace utilisé par le journal : "+(gdEst.usage/1e6).toFixed(1)+" Mo sur "+Math.round(gdEst.quota/1e6)+" Mo disponibles ("+pct+" %)")}
+    else l.push("Données du journal : environ "+(gdMemChars()/1e6).toFixed(1)+" Mo");
+  }else{
+    const mo=gdMemChars()/1e6,pct=Math.round(mo/5*100);
+    l.push("Mode de secours : IndexedDB indisponible, mémoire limitée à ~5 Mo. Utilisé : "+mo.toFixed(1)+" Mo ("+pct+" %)"+(pct>=70?" — attention : allège ou supprime des captures.":""));
+  }
+  if(!gdStandalone())l.push("Pour protéger tes données : menu du navigateur → « Ajouter à l’écran d’accueil » (iPhone : bouton Partager), puis ouvre le journal depuis cette icône.");
+  return l.map(esc).join("<br>");
+}
+async function gdPersist(ask){
+  try{
+    if(navigator.storage&&navigator.storage.persisted){
+      gdPersisted=await navigator.storage.persisted();
+      if(!gdPersisted&&ask&&navigator.storage.persist)gdPersisted=await navigator.storage.persist();
+    }
+    if(navigator.storage&&navigator.storage.estimate)gdEst=await navigator.storage.estimate();
+  }catch(e){}
+  const e=document.getElementById("gdProt");if(e)e.innerHTML=gdProtHtml();
+}
+function gdCard(){
+  setTimeout(()=>gdPersist(false),0);
+  const on=gdOn();
+  const fld=(id,lab,ph,val)=>`<label style="display:block;font-size:12px;color:var(--mute);margin-bottom:6px" for="${id}">${lab}</label><input id="${id}" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${ph}" value="${esc(val)}" style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--soft);color:var(--ink);font:inherit;margin-bottom:12px">`;
+  const inp=(GD_URL?"":fld("gdUrl","URL du script (se termine par /exec)","https://script.google.com/macros/s/…/exec",gdUrl()))+(GD_CODE?"":fld("gdCode","Code secret (identique à celui du script)","ton-code-secret",gdCode()));
+  const sp='<div style="height:8px"></div>';
+  const btns=on?`<button class="lnk" id="gdSyncNow">${ic("dl")}Synchroniser maintenant</button>${sp}<button class="lnk" id="gdVersions">${ic("dl")}Voir les versions datées (${GD_KEEP} jours)</button>`+(gdVers?gdVers.map(f=>`${sp}<button class="lnk" data-gdrest="${esc(f.id)}">${ic("dl")}Restaurer le ${esc(f.name.replace(/^sauvegarde-|\.json$/g,""))}</button>`).join(""):"")+`${sp}<button class="lnk" id="gdDisc">${ic("dl")}Déconnecter Google Drive</button>`:`<button class="lnk" id="gdConnect">${ic("dl")}Connecter Google Drive</button>`;
+  return `<div class="card"><h2>Sauvegarde Google Drive</h2><p class="ms" style="margin:0 0 12px">Copie automatique de tes données (trades, comptes, analyses, captures) dans le dossier « ${GD_DIR} » de ton Drive, après chaque modification, avec une version datée par jour (${GD_KEEP} conservées).</p>${inp}${btns}<p class="ft" id="gdStatus" role="status" style="margin:10px 0 0">${esc(gdMsg)}</p><hr style="border:0;border-top:1px solid var(--line);margin:14px 0"><p class="ft" id="gdProt" style="margin:0">${gdProtHtml()}</p></div>`;
+}
+function gdConnectClick(){
+  const u=document.getElementById("gdUrl"),c=document.getElementById("gdCode");
+  if(u)gdLS.set("gd_url",u.value.trim());if(c)gdLS.set("gd_code",c.value.trim());
+  if(!/^https:\/\/script\.google\.com\/.+\/exec$/.test(gdUrl())){gdStatus("err","L’URL du script doit se terminer par /exec (copie-la depuis « Déployer »).");return}
+  if(!gdCode()){gdStatus("err","Saisis le code secret défini dans le script.");return}
+  gdLS.set("gd_on","1");gdLS.set("gd_last","0");gdVers=null;
+  gdPersist(true);render();gdSync(true);
+}
+function gdDisconnect(){
+  gdVers=null;gdLS.set("gd_on","0");gdLS.set("gd_last","0");
+  gdStatus("off","Google Drive déconnecté. Tes fichiers restent dans ton Drive.");render();
+}
+function gdInit(){
+  gdPersist(true);
+  if(gdOn()){gdStatus("busy","Connexion à Google Drive…");gdSync(false)}
+  if(!gdStandalone()&&gdLS.get("gd_hint")!=="1")setTimeout(()=>{toast("Astuce : ajoute le journal à l’écran d’accueil pour protéger tes données.");gdLS.set("gd_hint","1")},4000);
+  document.addEventListener("change",e=>{if(e.target&&(e.target.id==="gdUrl"||e.target.id==="gdCode"))gdLS.set(e.target.id==="gdUrl"?"gd_url":"gd_code",e.target.value.trim())});
+  document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&gdOn()&&Date.now()-gdLastVis>30000){gdLastVis=Date.now();gdSync(false)}});
+}
+
+kvLoad().then(()=>{kvReloadLab();init();gdInit()});
+</script>
+</body>
+</html>
